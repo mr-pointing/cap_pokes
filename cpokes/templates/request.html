@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tattoo Booking Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+</head>
+<body>
+    <header>
+        <h1>Tattoo Booking Request</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#artists">Artists</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="booking-form">
+            <h2>Book Your Tattoo Appointment</h2>
+            <form action="/submit-booking" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tattoo-style">Tattoo Style:</label>
+                    <select id="tattoo-style" name="tattoo-style" required>
+                        <option value="">Select a style</option>
+                        <option value="traditional">Traditional</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="realistic">Realistic</option>
+                        <option value="tribal">Tribal</option>
+                        <option value="blackwork">Blackwork</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Tattoo Description:</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="size">Approximate Size (inches):</label>
+                    <input type="text" id="size" name="size" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="placement">Body Placement:</label>
+                    <input type="text" id="placement" name="placement" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reference">Reference Images:</label>
+                    <input type="file" id="reference" name="reference" accept="image/*" multiple>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Booking Request</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Tattoo Studio. All rights reserved.</p>
+        <div class="social-links">
+            <a href="#" class="social-link">Instagram</a>
+            <a href="#" class="social-link">Facebook</a>
+            <a href="#" class="social-link">Twitter</a>
+        </div>
+    </footer>
+</body>
+</html>
