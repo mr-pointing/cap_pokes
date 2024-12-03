@@ -5,24 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tattoo Booking Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <script>
+        // JavaScript function to show/hide fields based on the selection
+        function handleOptionChange() {
+            const flashOption = document.getElementById("flash");
+            const customOption = document.getElementById("custom");
+            const flashFields = document.getElementById("flash-fields");
+            const customFields = document.getElementById("custom-fields");
+
+            if (flashOption.checked) {
+                flashFields.style.display = "block";
+                customFields.style.display = "none";
+            } else if (customOption.checked) {
+                flashFields.style.display = "none";
+                customFields.style.display = "block";
+            } else {
+                flashFields.style.display = "none";
+                customFields.style.display = "none";
+            }
+        }
+
+        // Run the function on page load to handle pre-checked options
+        window.onload = handleOptionChange;
+    </script>
 </head>
 <body>
     <header>
-        <h1>Tattoo Booking Request</h1>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#artists">Artists</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+        <h1>Binky Core</h1>
+        <p class="tagline">Professional Tattoo Artist</p>
     </header>
 
     <main>
-        <section class="booking-form">
-            <h2>Book Your Tattoo Appointment</h2>
-            <form action="/submit-booking" method="POST">
+        <section class="request-form">
+            <h2>Request Your Tattoo Appointment</h2>
+            <form method="post">
+
+                {# Choosing Flash or Custom  #}
+                <div class="form-group">
+                    <label for="flash-or-custom"><b>Flash or Custom?</b><br></label>
+                        <input type="radio" id="flash" name="flash-or-custom" value="Flash" onchange="handleOptionChange()">
+                        <label for="flash">Flash</label><br>
+                        <input type="radio" id="custom" name="flash-or-custom" value="Custom" onchange="handleOptionChange()">
+                        <label for="custom">Custom</label><br>
+                </div>
+
+                {# Flash Fields #}
+                <div id="flash-fields">
+                    <div class="form-group">
+                        <label for="reference">Flash Screenshot:</label>
+                        <input type="file" id="reference" name="reference" accept="image/*" multiple>
+                    </div>
+                </div>
+
+                {# Custom Fields #}
+                <div id="custom-fields">
+                    <div class="form-group">
+                        <label for="description">Custom Description:</label><br>
+                        <textarea id="custom_idea" name="custom_idea" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reference">Custom References:</label>
+                        <input type="file" id="cust_reference" name="cust_reference" accept="image/*" multiple>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="size">Approximate Size (inches):</label>
+                    <select id="size" name="size" required>
+                        <option value="">Select a size</option>
+                        <option value="1-2">1" to 2"</option>
+                        <option value="3-4">3" to 4"</option>
+                        <option value="5-6">5" to 6"</option>
+                        <option value="7-8">7" to 8"</option>
+                        <option value="9+">9"+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="placement">Body Placement:</label>
+                    <select id="placement" name="placement" required>
+                        <option value="">Select a part</option>
+                        <option value="arms">Arms</option>
+                        <option value="back">Back</option>
+                        <option value="chest">Chest</option>
+                        <option value="legs">Legs</option>
+                        <option value="shoulder">Shoulder</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget">Budget:</label>
+                    <input type="text" id="budget" name="budget" required>
+                </div>
+
                 <div class="form-group">
                     <label for="name">Full Name:</label>
                     <input type="text" id="name" name="name" required>
@@ -39,35 +117,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tattoo-style">Tattoo Style:</label>
-                    <select id="tattoo-style" name="tattoo-style" required>
-                        <option value="">Select a style</option>
-                        <option value="traditional">Traditional</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="realistic">Realistic</option>
-                        <option value="tribal">Tribal</option>
-                        <option value="blackwork">Blackwork</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Tattoo Description:</label>
-                    <textarea id="description" name="description" rows="4" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="size">Approximate Size (inches):</label>
-                    <input type="text" id="size" name="size" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="placement">Body Placement:</label>
-                    <input type="text" id="placement" name="placement" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="reference">Reference Images:</label>
-                    <input type="file" id="reference" name="reference" accept="image/*" multiple>
+                    <label for="pronouns">Pronouns:</label>
+                    <input type="text" id="pronouns" name="pronouns" required>
                 </div>
 
                 <button type="submit" class="submit-btn">Submit Booking Request</button>

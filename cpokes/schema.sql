@@ -12,15 +12,18 @@ CREATE TABLE client (
     uid INTEGER PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
-    phone TEXT
+    phone TEXT,
+    pronouns TEXT
 );
 
 CREATE TABLE requests (
     rid INTEGER PRIMARY KEY,
     uid INTEGER NOT NULL,
     flash_custom INTEGER NOT NULL DEFAULT 0,
-    size REAL NOT NULL,
+    custom_idea TEXT,
+    size TEXT NOT NULL,
     placement TEXT NOT NULL,
+    budget TEXT,
     reference BLOB NOT NULL
 );
 
