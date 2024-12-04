@@ -6,6 +6,7 @@ Purpose: Database file, sets up the database for us
 import sqlite3
 import click
 from flask import current_app, g
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def get_db():
     if 'db' not in g:
@@ -28,6 +29,7 @@ def init_db():
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf-8'))
+    init_admin()
 
 
 @click.command('init-db')
@@ -38,3 +40,16 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+def init_admin():
+    db = get_db()
+    username = "admin"
+    password = "password"
+    hashed = generate_password_hash(password)
+
+    db.execute(
+        'INSERT INTO user (username, password) VALUES (?, ?)', (username, hashed)
+    )
+
+    db.commit()
+    db.close()

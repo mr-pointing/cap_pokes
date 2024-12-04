@@ -12,6 +12,6 @@ bp = Blueprint('landing', __name__)
 
 
 @bp.route('/')
-def landing():  # put application's code here
+def landing():
     return render_template('landing.html')
 

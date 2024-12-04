@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+</head>
+<body>
+
+{% block content %}
+    {% for request in current_requests %}
+        <div class="admin-container">
+            <div class="request-info">
+                <div class="request-field">
+                    <h3>Request Details</h3>
+                    <p><strong>Size:</strong> {{ request['size'] }}</p>
+                    <p><strong>Placement:</strong> {{ request['placement'] }}</p>
+                    <p><strong>Budget:</strong> {{ request['budget'] }}</p>
+                </div>
+                <div class="request-field">
+                    <h3>Customer Information</h3>
+                    <p><strong>User ID:</strong> {{ request['uid'] }}</p>
+                </div>
+                <div class="request-images">
+                    <p>References:</p>
+                    {{ request['reference'] }}
+
+                    {%  if request['flash_custom'] == 1 %}
+
+                        <div class="custom-idea" id="custom-section">
+                            <span class="flash-custom-badge">Custom Request</span>
+                            {{ request['custom_idea'] }}
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+</body>
+</html>

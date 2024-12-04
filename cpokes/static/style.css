@@ -159,3 +159,89 @@ footer {
 #flash-fields, #custom-fields {
     display: none;
 }
+
+/* Admin page styles */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.request-card {
+    background-color: var(--primary-beige);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.request-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.request-field {
+    margin-bottom: 1rem;
+}
+
+.request-field h4 {
+    color: var(--primary-black);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.request-field p {
+    color: var(--secondary-black);
+    line-height: 1.4;
+}
+
+.request-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.request-images img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.custom-idea {
+    grid-column: 1 / -1;
+    background-color: var(--secondary-beige);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.flash-custom-badge {
+    display: inline-block;
+    background-color: var(--primary-black);
+    color: var(--primary-beige);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 1rem;
+    }
+
+    .request-info {
+        grid-template-columns: 1fr;
+    }
+
+    .request-images {
+        grid-template-columns: 1fr;
+    }
+}
