@@ -24,6 +24,6 @@ CREATE TABLE requests (
     size TEXT NOT NULL,
     placement TEXT NOT NULL,
     budget TEXT,
-    reference BLOB NOT NULL
+    reference TEXT NOT NULL
 );
 
