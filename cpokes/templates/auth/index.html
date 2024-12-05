@@ -20,11 +20,13 @@
                 </div>
                 <div class="request-field">
                     <h3>Customer Information</h3>
-                    <p><strong>User ID:</strong> {{ request['uid'] }}</p>
+                    <p><strong>Name:</strong> {{ request['name'] }}</p>
+                    <p><strong>Email:</strong> {{ request['email'] }}</p>
+                    <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
                 </div>
                 <div class="request-images">
                     <p>References:</p>
-                    {{ request['reference'] }}
+                    <img src="{{ request['reference'] }}" width="400" height="400">
 
                     {%  if request['flash_custom'] == 1 %}
 

@@ -4,9 +4,9 @@ Author: Richard Pointing
 Purpose: Admin page, functions to get tattoo artist to view all request forms
 """
 import functools
-
+from io import BytesIO
 from flask import (
-    Blueprint, flash, g, redirect, render_template, session, request, url_for
+    Blueprint, flash, g, redirect, render_template, session, request, url_for, send_file
 )
 import os
 from cpokes.db import get_db
@@ -50,7 +50,7 @@ def logout():
 def get_requests():
     db = get_db()
     current_requests = db.execute(
-        'SELECT * FROM requests'
+        'SELECT * FROM requests JOIN main.client c on requests.uid = c.uid'
     ).fetchall()
     return current_requests
 
