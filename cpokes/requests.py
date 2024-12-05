@@ -3,11 +3,15 @@ Title: Capricorn Pokes Booking Site
 Author: Richard Pointing
 Purpose: Landing page, has all the options for all main features
 """
+import logging
 from flask import (
-    Blueprint, Flask, g, redirect, render_template, request, session, url_for
+    Blueprint, Flask, current_app, g, redirect, render_template, request, session, url_for, send_file
 )
 import os
+import uuid
+from werkzeug.utils import secure_filename
 from cpokes.db import get_db
+logging.basicConfig(level=logging.DEBUG)
 
 bp = Blueprint('requests', __name__)
 
@@ -18,23 +22,42 @@ def request_tattoo():
         db = get_db()
         error = None
 
-        if request.form['flash-or-custom'] == 'Flash':
-            flash_custom = 0
-            custom_idea = ""
-        else:
-            flash_custom = 1
-            custom_idea = request.form['custom_idea']
-            custom_reference = request.form['cust_reference']
+        # if request.form['flash-or-custom'] == 'Flash':
+        #     flash_custom = 0
+        #     custom_idea = ""
+        # else:
+        #     flash_custom = 1
+        #     custom_idea = request.form['custom_idea']
+        #     custom_reference = request.files.get('cust_reference')
+        #
+        # if custom_idea:
+        #     reference = custom_reference
+        # else:
+        #     reference = request.files.get('reference')
+        flash_custom = 0 if request.form['flash-or-custom'] == 'Flash' else 1
+        custom_idea = request.form.get('custom_idea', "")
 
-        if custom_idea:
-            reference = custom_reference
+        uploaded_file = request.files.get('reference') if flash_custom == 0 else request.files.get('cust_reference')
+
+
+        # Store uploaded images in uploads directory
+        if uploaded_file and uploaded_file.filename != '':
+            filename = secure_filename(uploaded_file.filename)
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            uploaded_file.save(file_path)
+            reference = f"/uploads/{unique_filename}"
         else:
-            reference = request.form['reference']
+            reference = None
+
         size = request.form['size']
         placement = request.form['placement']
         budget = request.form['budget']
-
         client_email = request.form['email']
+
+        logging.debug(f"Form data: {request.form}")
+        logging.debug(f"File path: {reference}")
+
         existing_client = db.execute('SELECT * FROM client WHERE email=?', (client_email,)).fetchone()
 
         if existing_client:
@@ -43,10 +66,12 @@ def request_tattoo():
             if error is None:
                 try:
                     db.execute(
-                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) '
+                        'VALUES (?, ?, ?, ?, ?, ?, ?)',
                         (uid, flash_custom, custom_idea, size, placement, budget, reference),
                     )
                     db.commit()
+                    logging.debug("Inserted request into requests table.")
                 except db.IntegrityError:
                     error = "Something went wrong!"
                 else:
@@ -65,11 +90,14 @@ def request_tattoo():
                     uid_row = db.execute('SELECT uid FROM client WHERE email=?', (client_email,)).fetchone()
                     uid = uid_row['uid'] if uid_row else None
                     db.execute(
-                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) '
+                        'VALUES (?, ?, ?, ?, ?, ?, ?)',
                         (uid, flash_custom, custom_idea, size, placement, budget, reference),
                     )
                     db.commit()
-                except db.IntegrityError:
+                    logging.debug("Inserted client and request into requests table.")
+                except db.IntegrityError as e:
+                    logging.error(f"Database error: {e}")
                     error = "Something went wrong!"
                 else:
                     return render_template('landing.html')

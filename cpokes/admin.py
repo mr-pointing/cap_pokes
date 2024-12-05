@@ -6,7 +6,7 @@ Purpose: Admin page, functions to get tattoo artist to view all request forms
 import functools
 from io import BytesIO
 from flask import (
-    Blueprint, flash, g, redirect, render_template, session, request, url_for, send_file
+    Blueprint, flash, g, redirect, render_template, session, request, url_for, send_from_directory, current_app
 )
 import os
 from cpokes.db import get_db
@@ -53,6 +53,14 @@ def get_requests():
         'SELECT * FROM requests JOIN main.client c on requests.uid = c.uid'
     ).fetchall()
     return current_requests
+
+
+# Allows Flask to upload images
+@bp.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
+
 
 # Index
 @bp.route('/admin/index')

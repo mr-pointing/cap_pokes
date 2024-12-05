@@ -14,6 +14,10 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'clients.sqlite'),
+
+        # Mappings for image folder
+        UPLOAD_FOLDER=os.path.join(app.instance_path, 'uploads'),
+        MAX_CONTENT_LENGTH=16 * 1024 * 1024
     )
 
     if test_config is None:
@@ -25,23 +29,6 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    # Creating Images directory
-    app.config["Images"] = "Images"
-
-    def encode_image_directory():
-        image_directory = os.path.join(app.config["Images"])
-        image_files = os.listdir(image_directory)
-        images = {}
-
-        for filename in image_files:
-            file_path = os.path.join(image_directory, filename)
-            with open(file_path, "rb") as f:
-                encoded_image = base64.b64encode(f.read()).decode('utf-8')
-                encoded_image = encoded_image.replace('\n', '')
-                image_url = 'data:image/png;base64,' + encoded_image
-                images[filename] = image_url
-        return images
 
     from . import db
     db.init_app(app)
