@@ -4,6 +4,7 @@ Author: Richard Pointing
 Purpose: Landing page, has all the options for all main features
 """
 import logging
+import cpokes.email_funcs as ef
 from flask import (
     Blueprint, Flask, current_app, g, redirect, render_template, request, session, url_for, send_file
 )
@@ -71,6 +72,8 @@ def request_tattoo():
                         (uid, flash_custom, custom_idea, size, placement, budget, reference),
                     )
                     db.commit()
+                    ef.send_request_email(request)
+                    ef.send_request_updates(request)
                     logging.debug("Inserted request into requests table.")
                 except db.IntegrityError:
                     error = "Something went wrong!"
@@ -95,6 +98,8 @@ def request_tattoo():
                         (uid, flash_custom, custom_idea, size, placement, budget, reference),
                     )
                     db.commit()
+                    ef.send_request_email(request)
+                    ef.send_request_updates(request)
                     logging.debug("Inserted client and request into requests table.")
                 except db.IntegrityError as e:
                     logging.error(f"Database error: {e}")
