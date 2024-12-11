@@ -14,6 +14,7 @@ from werkzeug.security import check_password_hash
 
 bp = Blueprint('admin', __name__)
 
+
 # Log Admin In
 @bp.route('/admin', methods=('GET', 'POST'))
 def login():
@@ -39,6 +40,7 @@ def login():
 
     return render_template('auth/login.html')
 
+
 # Log Admin Out
 @bp.route('/logout')
 def logout():
@@ -61,13 +63,24 @@ def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
 
-
 # Index
-@bp.route('/admin/index')
+@bp.route('/admin/index', methods=('GET', 'POST'))
 def index():
-
     if session.get('user_id') == 1:
+        if request.method == 'POST':
+            request_id = request.form.get('accept_request')
+            if request_id:
+                return redirect(url_for('admin.booking', request_id=request_id))
+
         current_requests = get_requests()
         return render_template('auth/index.html', current_requests=current_requests)
     else:
         return redirect(url_for('admin.login'))
+
+@bp.route('/admin/booking/<int:request_id>', methods=('GET', 'POST'))
+def booking(request_id):
+    db = get_db()
+    request_for_book = db.execute("SELECT * FROM requests JOIN main.client c"
+                                  " on requests.uid = c.uid WHERE rid = ?", (request_id,)).fetchone()
+    return render_template('auth/booking.html', request=request_for_book)
+

@@ -12,6 +12,7 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from cpokes.db import get_db
+
 logging.basicConfig(level=logging.DEBUG)
 
 bp = Blueprint('requests', __name__)
@@ -23,23 +24,10 @@ def request_tattoo():
         db = get_db()
         error = None
 
-        # if request.form['flash-or-custom'] == 'Flash':
-        #     flash_custom = 0
-        #     custom_idea = ""
-        # else:
-        #     flash_custom = 1
-        #     custom_idea = request.form['custom_idea']
-        #     custom_reference = request.files.get('cust_reference')
-        #
-        # if custom_idea:
-        #     reference = custom_reference
-        # else:
-        #     reference = request.files.get('reference')
         flash_custom = 0 if request.form['flash-or-custom'] == 'Flash' else 1
         custom_idea = request.form.get('custom_idea', "")
 
         uploaded_file = request.files.get('reference') if flash_custom == 0 else request.files.get('cust_reference')
-
 
         # Store uploaded images in uploads directory
         if uploaded_file and uploaded_file.filename != '':
@@ -75,6 +63,7 @@ def request_tattoo():
                     ef.send_request_email(request)
                     ef.send_request_updates(request)
                     logging.debug("Inserted request into requests table.")
+                    return redirect(url_for('landing.landing'))
                 except db.IntegrityError:
                     error = "Something went wrong!"
                 else:
@@ -101,6 +90,7 @@ def request_tattoo():
                     ef.send_request_email(request)
                     ef.send_request_updates(request)
                     logging.debug("Inserted client and request into requests table.")
+                    return redirect(url_for('landing.landing'))
                 except db.IntegrityError as e:
                     logging.error(f"Database error: {e}")
                     error = "Something went wrong!"

@@ -13,10 +13,13 @@
         <div class="admin-container">
             <div class="request-info">
                 <div class="request-field">
-                    <h3>Request Details</h3>
-                    <p><strong>Size:</strong> {{ request['size'] }}</p>
-                    <p><strong>Placement:</strong> {{ request['placement'] }}</p>
-                    <p><strong>Budget:</strong> {{ request['budget'] }}</p>
+                    <form method="post">
+                        <h3>Request Details</h3>
+                        <p><strong>Size:</strong> {{ request['size'] }}</p>
+                        <p><strong>Placement:</strong> {{ request['placement'] }}</p>
+                        <p><strong>Budget:</strong> {{ request['budget'] }}</p>
+                        <button type="submit" class="submit-btn" name="accept_request" value="{{ request['rid'] }}">Accept?</button>
+                    </form>
                 </div>
                 <div class="request-field">
                     <h3>Customer Information</h3>
