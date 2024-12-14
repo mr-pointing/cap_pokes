@@ -61,16 +61,18 @@ def request_tattoo():
                     )
                     db.commit()
                     ef.send_request_email(request)
-                    ef.send_request_updates(request)
+                    # ef.send_request_updates(request)
                     logging.debug("Inserted request into requests table.")
                     return redirect(url_for('landing.landing'))
                 except db.IntegrityError:
                     error = "Something went wrong!"
-                else:
-                    return render_template('landing.html')
+
         else:
             name = request.form['name']
-            phone = request.form['phone']
+            if request.form['consent']:
+                phone = request.form['phone']
+            else:
+                phone = None
             pronouns = request.form['pronouns']
             db.execute(
                 'INSERT INTO client (email, name, phone, pronouns) VALUES (?, ?, ?, ?)',
@@ -88,13 +90,11 @@ def request_tattoo():
                     )
                     db.commit()
                     ef.send_request_email(request)
-                    ef.send_request_updates(request)
+                    # ef.send_request_updates(request)
                     logging.debug("Inserted client and request into requests table.")
                     return redirect(url_for('landing.landing'))
                 except db.IntegrityError as e:
                     logging.error(f"Database error: {e}")
                     error = "Something went wrong!"
-                else:
-                    return render_template('landing.html')
 
     return render_template('request.html')

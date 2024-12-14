@@ -31,11 +31,15 @@ CREATE TABLE requests (
 CREATE TABLE bookings (
     bid INTEGER PRIMARY KEY,
     uid INTEGER NOT NULL,
-    fast_or_reg INTEGER NOT NULL DEFAULT 0,
+    rid INTEGER NOT NULL,
     deposit INTEGER NOT NULL,
-    date TEXT NOT NULL,
-    time TEXT NOT NULL,
+    confirmed INTEGER NOT NULL DEFAULT 0,
+    length INTEGER NOT NULL,
+    date TEXT,
+    time TEXT,
     size TEXT NOT NULL,
     placement TEXT NOT NULL,
-    budget TEXT
+    budget TEXT,
+    token TEXT NOT NULL,
+    reference TEXT
 );

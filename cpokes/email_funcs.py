@@ -130,3 +130,50 @@ def send_request_updates(request_form):
 
     except HttpError as error:
         print(f"An error occurred: {error}")
+
+def send_booking_form(client_email, booking_link):
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
+
+    try:
+        # Call the Gmail API
+        service = build("gmail", "v1", credentials=creds)
+        message = EmailMessage()
+
+        message.set_content(f"Thanks for requesting a tattoo with me! Happy to say I'd like to book a tattoo with you!"
+                            f"See attached form to get started: {booking_link}\n")
+        message["To"] = client_email
+        message["From"] = "jdogthegreat4334@gmail.com"
+        message["Subject"] = "Testing client booking forms!"
+
+        # encoded message
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+        create_message = {"raw": encoded_message}
+        # pylint: disable=E1101
+        send_message = (
+            service.users()
+            .messages()
+            .send(userId="me", body=create_message)
+            .execute()
+        )
+        print(f'Message Id: {send_message["id"]}')
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
