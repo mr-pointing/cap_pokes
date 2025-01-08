@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Booking Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
 </head>
 <body>
@@ -31,65 +30,20 @@
                     <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
                 </div>
 
-                {# Place the calendar, & link to payment  #}
-                <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                      let calendarEl = document.getElementById('calendar');
-                      let tempEvent = null;
+                <!-- Calendly inline widget begin -->
+                <div class="calendly-inline-widget"
+                     data-url="https://calendly.com/capricornpokes/{{request['type']}}/?name={{request['name'].replace(" ", "%20")}}&email={{request['email']}}&background_color=f5e6d3&primary_color=ffbc00&text_color=000000"
+                     style="min-width:320px;height:700px;"></div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async>
 
-                      const calendar = new FullCalendar.Calendar(calendarEl, {
-                          initialView: 'timeGridWeek', // Month view
-                          events: '/api/artist-availability', // URL to fetch events
-                          selectable: true, // Allow users to select dates
-                          slotEventOverlap: false,
-                          slotMinTime: "11:00:00",
-                          dateClick: function (info) {
-
-                              const duration = {{ request['length'] | tojson }};
-                              const endTime = new Date(info.date.getTime() + duration * 60 * 60 * 1000);
-
-                              // Checks for time conflicts; ensures events cannot happen at the same time
-                              const hasConflict = calendar.getEvents().some(e => {
-                                  const existingStart = e.start;
-                                  const existingEnd = e.end;
-
-                                  return (
-                                      (info.date >= existingStart && info.date < existingEnd) ||
-                                      (endTime > existingStart && endTime <= existingEnd) ||
-                                      (info.date <= existingStart && endTime >= existingEnd)
-                                  );
-                              });
-
-                              if (hasConflict) {
-                                  alert("time slot taken");
-                                  return;
-                              }
-
-                              if (tempEvent) {
-                                  tempEvent.remove();
-                              }
-                              tempEvent = calendar.addEvent({
-                                  title: {{ request['name'] | tojson }},
-                                  start: info.date,
-                                  end: endTime,
-                                  color: "blue",
-                                  editable: false,
-                                  overlap: false
-                              });
-                          },
-                      });
-
-                      calendar.render();
-                  });
                 </script>
-
-                <div id="calendar"></div>
+                <!-- Calendly inline widget end -->
             </form>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2023 Tattoo Studio. All rights reserved.</p>
+        <p>&copy; 2024 Tattoo Studio. All rights reserved.</p>
         <div class="social-links">
             <a href="#" class="social-link">Instagram</a>
             <a href="#" class="social-link">Facebook</a>

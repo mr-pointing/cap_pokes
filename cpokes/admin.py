@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from io import BytesIO
 import uuid
+import logging
 from flask import (
     Blueprint, flash, g, redirect, render_template, session, request, url_for, send_from_directory, current_app
 )
@@ -54,10 +55,10 @@ def logout():
 
 
 # Retrieve all requests
-def get_requests():
+def get_unbooked_requests():
     db = get_db()
     current_requests = db.execute(
-        'SELECT * FROM requests JOIN main.client c on requests.uid = c.uid'
+        'SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0'
     ).fetchall()
     return current_requests
 
@@ -77,7 +78,7 @@ def index():
             if request_id:
                 return redirect(url_for('admin.booking', request_id=request_id))
 
-        current_requests = get_requests()
+        current_requests = get_unbooked_requests()
         return render_template('auth/index.html', current_requests=current_requests)
     else:
         return redirect(url_for('admin.login'))
@@ -93,22 +94,27 @@ def booking(request_id):
     if request.method == "POST":
         print("Post reached")
         print(f"Deposit: {request.form.get('deposit')}")
-        print(f"Length: {request.form.get('length')}")
+        print(f"Type: {request.form.get('type')}")
         # Generate unique token
         token = str(uuid.uuid4())
         # Commit to database
         try:
-            db.execute('INSERT INTO bookings (uid, rid, deposit, length, size, placement, budget, token, reference) '
-                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                       (request_for_book['uid'], request_id, request.form.get('deposit'), request.form.get('length'),
-                        request_for_book['size'], request_for_book['placement'], request_for_book['budget'], token,
-                        request_for_book['reference']))
-            print("Form data received:")
 
-            db.commit()
             # Generate link
             booking_link = url_for('admin.confirm_booking', token=token, _external=True)
             ef.send_booking_form(request_for_book['email'], booking_link)
+
+            db.execute('INSERT INTO bookings (uid, rid, deposit, type, size, placement, budget, token, reference, link)'
+                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                       (request_for_book['uid'], request_id, request.form.get('deposit'), request.form.get('type'),
+                        request_for_book['size'], request_for_book['placement'], request_for_book['budget'], token,
+                        request_for_book['reference'], booking_link))
+            logging.debug("Bookings updated")
+            db.execute('UPDATE requests SET booked = 1 WHERE rid = ?',
+                       (request_id,))
+            logging.debug("Requests updated")
+            db.commit()
+
             return redirect(url_for('admin.index'))
         except db.IntegrityError as e:
             print(e)
@@ -130,10 +136,3 @@ def confirm_booking(token):
         return redirect(url_for('landing.landing'))
 
 
-@bp.route('/api/artist-availability')
-def artist_availability():
-    file_path = Path(__file__).parent / "artist_schedule.json"
-    with open(file_path, "r") as f:
-        events = json.load(f)
-
-    return events

@@ -25,7 +25,8 @@ CREATE TABLE requests (
     size TEXT NOT NULL,
     placement TEXT NOT NULL,
     budget TEXT,
-    reference TEXT NOT NULL
+    reference TEXT NOT NULL,
+    booked INTEGER DEFAULT 0
 );
 
 CREATE TABLE bookings (
@@ -34,12 +35,13 @@ CREATE TABLE bookings (
     rid INTEGER NOT NULL,
     deposit INTEGER NOT NULL,
     confirmed INTEGER NOT NULL DEFAULT 0,
-    length INTEGER NOT NULL,
+    type TEXT NOT NULL,
     date TEXT,
     time TEXT,
     size TEXT NOT NULL,
     placement TEXT NOT NULL,
     budget TEXT,
     token TEXT NOT NULL,
-    reference TEXT
+    reference TEXT,
+    link TEXT
 );

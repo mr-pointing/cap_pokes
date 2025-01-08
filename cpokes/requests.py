@@ -48,6 +48,7 @@ def request_tattoo():
         logging.debug(f"File path: {reference}")
 
         existing_client = db.execute('SELECT * FROM client WHERE email=?', (client_email,)).fetchone()
+        logging.debug(f"Client Exists: {existing_client}")
 
         if existing_client:
             uid_row = db.execute('SELECT uid FROM client WHERE email=?', (client_email,)).fetchone()
@@ -55,9 +56,10 @@ def request_tattoo():
             if error is None:
                 try:
                     db.execute(
-                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) '
-                        'VALUES (?, ?, ?, ?, ?, ?, ?)',
-                        (uid, flash_custom, custom_idea, size, placement, budget, reference),
+                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, '
+                        'placement, budget, reference, booked) '
+                        'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                        (uid, flash_custom, custom_idea, size, placement, budget, reference, 0),
                     )
                     db.commit()
                     ef.send_request_email(request)
@@ -69,24 +71,23 @@ def request_tattoo():
 
         else:
             name = request.form['name']
-            if request.form['consent']:
-                phone = request.form['phone']
-            else:
-                phone = None
+            phone = request.form['phone']
             pronouns = request.form['pronouns']
             db.execute(
                 'INSERT INTO client (email, name, phone, pronouns) VALUES (?, ?, ?, ?)',
                 (client_email, name, phone, pronouns),
             )
             db.commit()
+            logging.debug(f"Client entered successfully")
             if error is None:
                 try:
                     uid_row = db.execute('SELECT uid FROM client WHERE email=?', (client_email,)).fetchone()
                     uid = uid_row['uid'] if uid_row else None
                     db.execute(
-                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, placement, budget, reference) '
-                        'VALUES (?, ?, ?, ?, ?, ?, ?)',
-                        (uid, flash_custom, custom_idea, size, placement, budget, reference),
+                        'INSERT INTO requests (uid, flash_custom, custom_idea, size, '
+                        'placement, budget, reference, booked) '
+                        'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                        (uid, flash_custom, custom_idea, size, placement, budget, reference, 0),
                     )
                     db.commit()
                     ef.send_request_email(request)
