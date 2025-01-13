@@ -9,12 +9,14 @@
 :root {
     --primary-black: #1a1a1a;
     --secondary-black: #333333;
-    --primary-beige: #f5e6d3;
+    --primary-beige: #8a7668;
     --secondary-beige: #e6d5c3;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: "Jacquarda Bastarda 9", serif;
+    font-weight: 400;
+    font-style: normal;
     line-height: 1.6;
     color: var(--primary-black);
     background-color: var(--primary-beige);
@@ -28,18 +30,36 @@ header {
     text-align: center;
 }
 
+.title{
+    font-size: 5rem;
+    letter-spacing: 24px;
+}
+
+.title:hover {
+    color: var(--secondary-beige);
+    transition: all 0.3s ease;
+}
+
 .tagline {
     font-style: italic;
     margin-top: 0.5rem;
+    font-size: 28px;
+}
+
+.tagline:hover {
+    color: var(--secondary-beige);
+    transition: all 0.3s ease;
 }
 
 /* Navigation and buttons */
 .btn {
     display: inline-block;
-    padding: 0.8rem 1.5rem;
+    padding: 1.5rem 1.5rem;
     text-decoration: none;
     border-radius: 4px;
     transition: all 0.3s ease;
+    width: 200px;
+    font-size: 2rem;
 }
 
 .btn-primary {
@@ -57,6 +77,7 @@ header {
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: var(--secondary-beige);
 }
 
 /* Hero section */
@@ -126,6 +147,7 @@ footer {
     text-decoration: none;
     margin: 0 1rem;
     transition: color 0.3s ease;
+    font-size: 28px;
 }
 
 .social-link:hover {
@@ -149,12 +171,23 @@ footer {
 
 /* Pushes the form into the center */
 .request-form {
-    margin: 50px;
+    margin: 10px;
+    font-size: 28px;
+    color: var(--secondary-beige);
+    text-align: left;
+
 }
 
 .form-group {
     margin-bottom: 1rem;
 }
+
+input, textarea, select, button {
+    background-color: #e6d5c3;
+    color: black;
+    padding: 8px 20px;
+}
+
 
 #flash-fields, #custom-fields {
     display: none;
@@ -185,21 +218,47 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
     margin-bottom: 1.5rem;
+    padding: 5px 5px;
 }
+
+#custom_idea {
+    width: 60%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+#request-submit {
+    font-family: "Jacquarda Bastarda 9", serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.6;
+    font-size: 2rem;
+    color: var(--primary-black);
+    max-height: 4rem;
+    max-width: 400px;
+}
+
 
 .request-field {
     margin-bottom: 1rem;
+    text-align: left;
+    padding: 5px 5px;
 }
 
-.request-field h4 {
-    color: var(--primary-black);
+.request-field h3 {
+    color: var(--secondary-beige);
     margin-bottom: 0.5rem;
     font-weight: 600;
+    font-size: 2.5rem;
+
 }
 
 .request-field p {
-    color: var(--secondary-black);
+    color: var(--primary-beige);
     line-height: 1.4;
+    font-size: 1.5rem;
 }
 
 .request-images {
@@ -235,6 +294,7 @@ footer {
 @media (max-width: 768px) {
     .admin-container {
         padding: 1rem;
+
     }
 
     .request-info {
@@ -244,4 +304,46 @@ footer {
     .request-images {
         grid-template-columns: 1fr;
     }
+}
+
+/* Admin log-in page styles */
+
+.login-page {
+    font-family: "Jacquarda Bastarda 9", serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.6;
+    font-size: 2rem;
+    color: white;
+    background-color: var(--primary-black);
+}
+
+.admin-login-div {
+    text-align: center;
+    padding: 4rem 2rem;
+    margin: 0.5rem;
+}
+
+.admin-title {
+    font-size: 3rem;
+}
+
+.admin-login-form {
+    display: inline-block;
+}
+
+.admin-index body, main {
+    color: white;
+    background-color: var(--primary-black);
+}
+
+.admin-hero {
+    background-color: var(--primary-black);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.admin-container {
+    background-color:rgba(230, 213, 195, 0.15);
 }

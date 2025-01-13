@@ -1,0 +1,40 @@
+{% extends 'auth/admin_base.html' %}
+
+{% block content %}
+    {% for request in current_requests %}
+        <div class="admin-container">
+            <div class="request-info">
+                <div class="request-field">
+                    <h3>Request Details</h3>
+                    <p><strong>Size:</strong> {{ request['size'] }}</p>
+                    <p><strong>Placement:</strong> {{ request['placement'] }}</p>
+                    <p><strong>Budget:</strong> {{ request['budget'] }}</p>
+                </div>
+                <div class="request-field">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> {{ request['name'] }}</p>
+                    <p><strong>Email:</strong> {{ request['email'] }}</p>
+                    <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
+                </div>
+
+                <div class="request-images">
+                    <p>References:</p>
+                    <img src="{{ request['reference'] }}" width="400" height="400">
+
+                    {%  if request['flash_custom'] == 1 %}
+
+                        <div class="custom-idea" id="custom-section">
+                            <span class="flash-custom-badge">Custom Request</span>
+                            <p style="color:#1a1a1a;">{{ request['custom_idea'] }}</p>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <form method="post">
+                    <button type="submit" class="submit-btn" id="request-submit" name="accept_request" value="{{ request['rid'] }}">Accept?</button>
+                </form>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+{% endblock %}

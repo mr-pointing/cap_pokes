@@ -1,65 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Booking Form</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-</head>
-<body>
-    <header>
-        <h1>Binky Core</h1>
-        <p class="tagline">Professional Tattoo Artist</p>
-    </header>
+{% extends 'auth/admin_base.html' %}
 
-    <main>
-        <section class="request-form">
-            <h2>Booking Your Tattoo Appointment</h2>
-            <form method="post" enctype="multipart/form-data">
-                <div class="request-field">
-                    <h3>Request Details</h3>
-                    <p><strong>Size:</strong> {{ request['size'] }}</p>
-                    <p><strong>Placement:</strong> {{ request['placement'] }}</p>
-                    <p><strong>Budget:</strong> {{ request['budget'] }}</p>
-                </div>
-                <div class="request-field">
-                    <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> {{ request['name'] }}</p>
-                    <p><strong>Email:</strong> {{ request['email'] }}</p>
-                    <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="type">Approximate Time in Hours:</label>
-                    <select id="type" name="type" required>
-                        <option value="">Select a type</option>
-                        <option value="small-tattoo-session">Small Tattoo (2 hr)</option>
-                        <option value="medium-tattoo-session">Medium Tattoo (3 1/2 hr)</option>
-                        <option value="large-tattoo-session">Large Tattoo (5 hr)</option>
-                        <option value="small-tattoo-session-clone">Small Reschedule (2 hr)</option>
-                        <option value="medium-tattoo-reschedule">Medium Reschedule (3 1/2 hr)</option>
-                        <option value="tattoo-touchup">Tattoo Touchup (1 1/2 hr)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="deposit">Deposit Amount:</label>
-                    <input type="number" id="deposit" name="deposit" value="100" step="50" min="0" required>
-                </div>
-
-                <button type="submit" class="submit-btn">Send Booking Form to Client</button>
-            </form>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2023 Tattoo Studio. All rights reserved.</p>
-        <div class="social-links">
-            <a href="#" class="social-link">Instagram</a>
-            <a href="#" class="social-link">Facebook</a>
-            <a href="#" class="social-link">Twitter</a>
+{%  block content %}
+<section class="request-form">
+    <h2>Confirm Booking</h2>
+    <form method="post" enctype="multipart/form-data">
+        <div class="request-field">
+            <h3>Request Details</h3>
+            <p><strong>Size:</strong> {{ request['size'] }}</p>
+            <p><strong>Placement:</strong> {{ request['placement'] }}</p>
+            <p><strong>Budget:</strong> {{ request['budget'] }}</p>
         </div>
-    </footer>
-</body>
-</html>
+        <div class="request-field">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> {{ request['name'] }}</p>
+            <p><strong>Email:</strong> {{ request['email'] }}</p>
+            <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
+        </div>
+
+
+        <div class="form-group">
+            <label for="type">Approximate Time in Hours:</label>
+            <select id="type" name="type" required>
+                <option value="">Select a type</option>
+                <option value="small-tattoo-session">Small Tattoo (2 hr)</option>
+                <option value="medium-tattoo-session">Medium Tattoo (3 1/2 hr)</option>
+                <option value="large-tattoo-session">Large Tattoo (5 hr)</option>
+                <option value="small-tattoo-session-clone">Small Reschedule (2 hr)</option>
+                <option value="medium-tattoo-reschedule">Medium Reschedule (3 1/2 hr)</option>
+                <option value="tattoo-touchup">Tattoo Touchup (1 1/2 hr)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="deposit">Deposit Amount:</label>
+            <input type="number" id="deposit" name="deposit" value="100" step="50" min="0" required>
+        </div>
+
+        <button type="submit" id="request-submit" class="submit-btn">Send Booking Form</button>
+    </form>
+</section>
+{% endblock %}

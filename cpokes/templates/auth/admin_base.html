@@ -2,23 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Administration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binky Core Tattoo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Assistant&family=B612+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Jacquarda+Bastarda+9&display=swap" rel="stylesheet">
+
 </head>
-<body class="login-page">
-    <div class="admin-login-div">
-        <h1 class="admin-title">Administration</h1>
-        <form method="post" class="admin-login-form">
-            <label for="username">Username</label>
-            <input name="username" id="username">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-            <input type="submit" value="Log In">
-        </form>
-    </div>
+<body class="admin-index" style="background-color:#1a1a1a;">
+    <header>
+        <h1 id="admin-hover" class="title"><a href="{{ url_for('admin.index') }}" style="text-decoration: none;color:white;" >Welcome Back, Binky Core</a></h1>
+    </header>
+    <section class="admin-hero">
+        {% block content %}{% endblock %}
+    </section>
 </body>
 </html>

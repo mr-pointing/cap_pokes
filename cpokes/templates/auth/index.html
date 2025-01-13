@@ -1,48 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-</head>
-<body>
+{% extends 'auth/admin_base.html' %}
+
 
 {% block content %}
-    {% for request in current_requests %}
-        <div class="admin-container">
-            <div class="request-info">
-                <div class="request-field">
-                    <form method="post">
-                        <h3>Request Details</h3>
-                        <p><strong>Size:</strong> {{ request['size'] }}</p>
-                        <p><strong>Placement:</strong> {{ request['placement'] }}</p>
-                        <p><strong>Budget:</strong> {{ request['budget'] }}</p>
-                        <button type="submit" class="submit-btn" name="accept_request" value="{{ request['rid'] }}">Accept?</button>
-                    </form>
-                </div>
-                <div class="request-field">
-                    <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> {{ request['name'] }}</p>
-                    <p><strong>Email:</strong> {{ request['email'] }}</p>
-                    <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
-                </div>
-                <div class="request-images">
-                    <p>References:</p>
-                    <img src="{{ request['reference'] }}" width="400" height="400">
-
-                    {%  if request['flash_custom'] == 1 %}
-
-                        <div class="custom-idea" id="custom-section">
-                            <span class="flash-custom-badge">Custom Request</span>
-                            {{ request['custom_idea'] }}
-                        </div>
-
-                    {% endif %}
-                </div>
-            </div>
+    <div class="hero-content">
+        <div class="cta-buttons">
+            <a href="{{ url_for('admin.current_requests')}}" class="btn btn-primary">Current Requests</a>
+            <a href="portfolio.html" class="btn btn-secondary">Portfolio</a>
         </div>
-    {% endfor %}
+    </div>
 {% endblock %}
-</body>
-</html>

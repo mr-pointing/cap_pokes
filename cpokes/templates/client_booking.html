@@ -1,54 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Booking Form</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+{% extends 'base.html' %}
+{% block content %}
+<section class="request-form">
+    <h2>Confirming Your Tattoo Appointment</h2>
+    <form method="post" enctype="multipart/form-data">
 
-</head>
-<body>
-    <header>
-        <h1>Binky Core</h1>
-        <p class="tagline">Professional Tattoo Artist</p>
-    </header>
+        <!-- Calendly inline widget begin -->
+        <div class="calendly-inline-widget"
+             data-url="https://calendly.com/capricornpokes/{{request['type']}}/?name={{request['name'].replace(" ", "%20")}}&email={{request['email']}}&background_color=f5e6d3&primary_color=ffbc00&text_color=000000"
+             style="min-width:320px;height:700px;"></div>
+        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async>
 
-    <main>
-        <section class="request-form">
-            <h2>Confirming Your Tattoo Appointment</h2>
-            <form method="post" enctype="multipart/form-data">
-                <div class="request-field">
-                    <h3>Request Details</h3>
-                    <p><strong>Size:</strong> {{ request['size'] }}</p>
-                    <p><strong>Placement:</strong> {{ request['placement'] }}</p>
-                    <p><strong>Budget:</strong> {{ request['budget'] }}</p>
-                </div>
-                <div class="request-field">
-                    <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> {{ request['name'] }}</p>
-                    <p><strong>Email:</strong> {{ request['email'] }}</p>
-                    <p><strong>Pronouns:</strong> {{ request['pronouns'] }}</p>
-                </div>
-
-                <!-- Calendly inline widget begin -->
-                <div class="calendly-inline-widget"
-                     data-url="https://calendly.com/capricornpokes/{{request['type']}}/?name={{request['name'].replace(" ", "%20")}}&email={{request['email']}}&background_color=f5e6d3&primary_color=ffbc00&text_color=000000"
-                     style="min-width:320px;height:700px;"></div>
-                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async>
-
-                </script>
-                <!-- Calendly inline widget end -->
-            </form>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Tattoo Studio. All rights reserved.</p>
-        <div class="social-links">
-            <a href="#" class="social-link">Instagram</a>
-            <a href="#" class="social-link">Facebook</a>
-            <a href="#" class="social-link">Twitter</a>
-        </div>
-    </footer>
-</body>
-</html>
+        </script>
+        <!-- Calendly inline widget end -->
+    </form>
+</section>
+{% endblock %}

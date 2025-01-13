@@ -73,16 +73,24 @@ def uploaded_file(filename):
 @bp.route('/admin/index', methods=('GET', 'POST'))
 def index():
     if session.get('user_id') == 1:
+        return render_template('auth/index.html')
+    else:
+        return redirect(url_for('admin.login'))
+
+
+# Admins Current Requests
+@bp.route('/admin/current_requests', methods=('GET', 'POST'))
+def current_requests():
+    if session.get('user_id') == 1:
         if request.method == 'POST':
             request_id = request.form.get('accept_request')
             if request_id:
                 return redirect(url_for('admin.booking', request_id=request_id))
 
-        current_requests = get_unbooked_requests()
-        return render_template('auth/index.html', current_requests=current_requests)
+        current_reqs = get_unbooked_requests()
+        return render_template('auth/current_requests.html', current_requests=current_reqs)
     else:
         return redirect(url_for('admin.login'))
-
 
 # Admins Booking platform: sends back to the client a deposit amount and time length
 @bp.route('/admin/booking/<int:request_id>', methods=('GET', 'POST'))

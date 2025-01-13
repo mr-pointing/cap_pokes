@@ -1,55 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binky Core Tattoo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-</head>
-<body>
-    <header>
-        <h1>Binky Core</h1>
-        <p class="tagline">Professional Tattoo Artist</p>
-    </header>
+{% extends 'base.html' %}
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h2>Custom Tattoo Design</h2>
-                <p>Creating unique and meaningful pieces that tell your story</p>
-                <div class="cta-buttons">
-                    <a href="{{ url_for('requests.request_tattoo')}}" class="btn btn-primary">Book Now</a>
-                    <a href="portfolio.html" class="btn btn-secondary">View Portfolio</a>
-                </div>
-            </div>
-        </section>
-
-        <section class="featured-work">
-            <h2>Featured Work</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="images/tattoo1.jpg" alt="Featured tattoo 1">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/tattoo2.jpg" alt="Featured tattoo 2">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/tattoo3.jpg" alt="Featured tattoo 3">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/tattoo4.jpg" alt="Featured tattoo 4">
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2023 Binky Core Tattoo. All rights reserved.</p>
-        <div class="social-links">
-            <a href="#" class="social-link">Instagram</a>
-            <a href="#" class="social-link">Facebook</a>
-            <a href="#" class="social-link">Twitter</a>
+{%  block content %}
+    <div class="hero-content">
+        <div class="cta-buttons">
+            <a href="{{ url_for('requests.request_tattoo')}}" class="btn btn-primary">Book</a>
+            <a href="portfolio.html" class="btn btn-secondary">Portfolio</a>
         </div>
-    </footer>
-</body>
-</html>
+    </div>
+{% endblock %}

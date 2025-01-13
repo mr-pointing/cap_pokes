@@ -1,7 +1,7 @@
 """
 Title: Capricorn Pokes Booking Site
 Author: Richard Pointing
-Purpose: Landing page, has all the options for all main features
+Purpose: Requests page, functions to request tattoos
 """
 import logging
 import cpokes.email_funcs as ef
