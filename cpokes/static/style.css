@@ -5,18 +5,31 @@
     box-sizing: border-box;
 }
 
+@font-face {
+    font-family: "Alagard";
+    src: url('alagard.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Alkhemikal";
+    src: url('Alkhemikal.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
 /* Color variables */
 :root {
-    --primary-black: #1a1a1a;
-    --secondary-black: #333333;
-    --primary-beige: #8a7668;
+    --primary-black: #282526;
+    --secondary-black: #353335;
+    --primary-beige: #c9baab;
     --secondary-beige: #e6d5c3;
 }
 
 body {
-    font-family: "Jacquarda Bastarda 9", serif;
-    font-weight: 400;
-    font-style: normal;
+    font-family: "Alagard", serif;
     line-height: 1.6;
     color: var(--primary-black);
     background-color: var(--primary-beige);
@@ -28,6 +41,9 @@ header {
     color: var(--primary-beige);
     padding: 2rem;
     text-align: center;
+    font-family: "Jacquarda Bastarda 9", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .title{
@@ -183,7 +199,7 @@ footer {
 }
 
 input, textarea, select, button {
-    background-color: #e6d5c3;
+    background-color: var(--secondary-beige);
     color: black;
     padding: 8px 20px;
 }

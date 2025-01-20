@@ -1,0 +1,41 @@
+{% extends 'auth/admin_base.html' %}
+
+{% block content %}
+    {% for booking in current_bookings %}
+        <div class="admin-container">
+            <div class="request-info">
+                <div class="request-field">
+                    <h3>Booking Details</h3>
+                    <p><strong>Size:</strong> {{ booking['size'] }}</p>
+                    <p><strong>Placement:</strong> {{ booking['placement'] }}</p>
+                    <p><strong>Budget:</strong> {{ booking['budget'] }}</p>
+                    <p><strong>Date:</strong> {{ booking['date'] }}</p>
+                    <p><strong>Time:</strong> {{ booking['time'] }}</p>
+                    <p><strong>Link:</strong> {{ booking['link'] }}</p>
+                </div>
+                <div class="request-field">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> {{ booking['name'] }}</p>
+                    <p><strong>Email:</strong> {{ booking['email'] }}</p>
+                    <p><strong>Pronouns:</strong> {{ booking['pronouns'] }}</p>
+                </div>
+
+                <div class="request-images">
+                    <p>References:</p>
+                    <img src="{{ booking['reference'] }}" width="400" height="400">
+
+                    {%  if booking['flash_custom'] == 1 %}
+
+                        <div class="custom-idea" id="custom-section">
+                            <span class="flash-custom-badge">Custom Booking</span>
+                            <p style="color:#1a1a1a;">{{ booking['custom_idea'] }}</p>
+                        </div>
+
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+{% endblock %}

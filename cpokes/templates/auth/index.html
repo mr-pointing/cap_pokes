@@ -5,7 +5,7 @@
     <div class="hero-content">
         <div class="cta-buttons">
             <a href="{{ url_for('admin.current_requests')}}" class="btn btn-primary">Current Requests</a>
-            <a href="portfolio.html" class="btn btn-secondary">Portfolio</a>
+            <a href="{{ url_for('admin.current_bookings') }}" class="btn btn-secondary">Current Bookings</a>
         </div>
     </div>
 {% endblock %}

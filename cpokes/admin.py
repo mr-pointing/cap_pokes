@@ -3,10 +3,6 @@ Title: Capricorn Pokes Booking Site
 Author: Richard Pointing
 Purpose: Admin page, functions to get tattoo artist to view all request forms
 """
-import functools
-import json
-from pathlib import Path
-from io import BytesIO
 import uuid
 import logging
 from flask import (
@@ -57,10 +53,29 @@ def logout():
 # Retrieve all requests
 def get_unbooked_requests():
     db = get_db()
-    current_requests = db.execute(
+    unbooked_requests = db.execute(
         'SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0'
     ).fetchall()
-    return current_requests
+    return unbooked_requests
+
+
+# Retrieve all booked appointments
+def get_booked():
+    db = get_db()
+    booked = db.execute(
+        'SELECT * FROM bookings JOIN main.client c on bookings.uid = c.uid'
+    ).fetchall()
+    return booked
+
+def search_requests(column, search_term):
+    db = get_db()
+    try:
+        search_results = db.execute(
+            'SELECT * FROM requests JOIN main.client c on requests.uid = c.uid WHERE ? = ?',
+            (column, search_term,)).fetchall()
+        return search_results
+    except db.IntegrityError as e:
+        print(e)
 
 
 # Allows Flask to upload images
@@ -89,6 +104,16 @@ def current_requests():
 
         current_reqs = get_unbooked_requests()
         return render_template('auth/current_requests.html', current_requests=current_reqs)
+    else:
+        return redirect(url_for('admin.login'))
+
+    # Admins Current Requests
+@bp.route('/admin/current_bookings', methods=('GET', 'POST'))
+def current_bookings():
+    if session.get('user_id') == 1:
+
+        current_booked = get_booked()
+        return render_template('auth/current_bookings.html', current_bookings=current_booked)
     else:
         return redirect(url_for('admin.login'))
 
