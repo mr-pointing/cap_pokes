@@ -9,10 +9,38 @@
         <div class="calendly-inline-widget"
              data-url="https://calendly.com/capricornpokes/{{request['type']}}/?name={{request['name'].replace(" ", "%20")}}&email={{request['email']}}&background_color=f5e6d3&primary_color=ffbc00&text_color=000000"
              style="min-width:320px;height:700px;"></div>
-        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async>
+        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
-        </script>
         <!-- Calendly inline widget end -->
     </form>
 </section>
+    <script>
+    // Listen for messages from the Calendly widget
+    window.addEventListener("message", function (event) {
+        if (event.origin === "https://calendly.com" && event.data.event === "calendly.event_scheduled") {
+            // Event scheduled data
+            const eventData = event.data.payload;
+            console.log('Event Scheduled:', eventData);
+
+            // Send data to update schedule route
+            fetch('/admin/update-schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    event_uri: eventData.event.uri,
+                    booking_id: {{ request['bid'] }}
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Backend response:', data);
+            })
+            .catch(error => {
+                console.error('Error updating schedule:', error);
+            });
+        }
+    });
+</script>
 {% endblock %}

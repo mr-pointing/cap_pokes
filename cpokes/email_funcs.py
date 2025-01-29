@@ -16,21 +16,21 @@ def send_request_email(request_form):
         artist_info = json.load(f)
 
     receiver = request_form.form["email"]
-    body = f"Thanks for requesting to book a tattoo with me! I should"\
+    body = f"Thanks for requesting to book a tattoo with me! I should "\
            f"get back to your request in 3 - 5 days.\n\n"\
-           f"Your Request Form:"\
-           f"Name: {request_form.form['name']}\n"\
-           f"Email: {request_form.form['email']}\n"\
-           f"Pronouns: {request_form.form['pronouns']}\n"\
-           f"References: {request_form.form['custom_idea']}\n"\
-           f"Size: {request_form.form['size']}\n"\
-           f"Placement: {request_form.form['placement']}\n"\
-           f"Budget: {request_form.form['budget']}\n"
+           f"Your Request Form:\n"\
+           f"<strong>Name:</strong> {request_form.form['name']}\n"\
+           f"<strong>Email</strong>: {request_form.form['email']}\n"\
+           f"<strong>Pronouns:</strong> {request_form.form['pronouns']}\n"\
+           f"<strong>References:</strong> {request_form.form['custom_idea']}\n"\
+           f"<strong>Size:</strong> {request_form.form['size']}\n"\
+           f"<strong>Placement:</strong> {request_form.form['placement']}\n"\
+           f"<strong>Budget:</strong> {request_form.form['budget']}\n"
     try:
         yag = yagmail.SMTP(artist_info['email_for_artist'], artist_info['efa_pw'])
         yag.send(
             to=receiver,
-            subject="Thanks for requesting to book a tattoo with me!",
+            subject="Booking Request Information",
             contents=body
         )
     except HttpError as error:

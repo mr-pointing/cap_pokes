@@ -1,6 +1,9 @@
 {% extends 'auth/admin_base.html' %}
 
 {% block content %}
+    <div class="cta-buttons" style="padding:1em;">
+            <a href="{{ url_for('admin.view_searched_requests')}}" class="btn btn-primary">Search</a>
+    </div>
     {% for request in current_requests %}
         <div class="admin-container">
             <div class="request-info">

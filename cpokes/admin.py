@@ -5,14 +5,17 @@ Purpose: Admin page, functions to get tattoo artist to view all request forms
 """
 import uuid
 import logging
+import requests
 from flask import (
-    Blueprint, flash, g, redirect, render_template, session, request, url_for, send_from_directory, current_app
+    Blueprint, flash, g, redirect, render_template, session, request, url_for, send_from_directory, current_app, jsonify
 )
-import os
+from pathlib import Path
 from cpokes.db import get_db
 from werkzeug.security import check_password_hash
 import cpokes.email_funcs as ef
 import json
+from datetime import datetime
+import pytz
 
 bp = Blueprint('admin', __name__)
 
@@ -67,16 +70,48 @@ def get_booked():
     ).fetchall()
     return booked
 
-def search_requests(column, search_term):
+# Searches table for results
+def search_table(column, search_term, table):
     db = get_db()
+    query = f'SELECT * FROM {table} JOIN main.client c on {table}.uid = c.uid WHERE {column} LIKE "%{search_term}%"'
+    if table == 'requests':
+        query += f' AND booked IS 0'
     try:
-        search_results = db.execute(
-            'SELECT * FROM requests JOIN main.client c on requests.uid = c.uid WHERE ? = ?',
-            (column, search_term,)).fetchall()
+        search_results = db.execute(query).fetchall()
         return search_results
     except db.IntegrityError as e:
         print(e)
 
+# Search feature for requests
+@bp.route('/admin/requests/search', methods=('GET', 'POST'))
+def view_searched_requests():
+    if session.get('user_id') == 1:
+        if request.method == 'POST':
+            col = request.form['column']
+            term = request.form['search_term']
+            answers = search_table(col, term, 'requests')
+            results = answers
+        else:
+            results = []
+        return render_template('auth/search_requests.html', results=results)
+    else:
+        return redirect(url_for('admin.login'))
+
+
+# Search feature for bookings
+@bp.route('/admin/bookings/search', methods=('GET', 'POST'))
+def view_searched_bookings():
+    if session.get('user_id') == 1:
+        if request.method == 'POST':
+            col = request.form['column']
+            term = request.form['search_term']
+            answers = search_table(col, term, 'bookings')
+            results = answers
+        else:
+            results = []
+        return render_template('auth/search_bookings.html', results=results)
+    else:
+        return redirect(url_for('admin.login'))
 
 # Allows Flask to upload images
 @bp.route('/uploads/<filename>')
@@ -94,7 +129,7 @@ def index():
 
 
 # Admins Current Requests
-@bp.route('/admin/current_requests', methods=('GET', 'POST'))
+@bp.route('/admin/requests', methods=('GET', 'POST'))
 def current_requests():
     if session.get('user_id') == 1:
         if request.method == 'POST':
@@ -107,8 +142,9 @@ def current_requests():
     else:
         return redirect(url_for('admin.login'))
 
-    # Admins Current Requests
-@bp.route('/admin/current_bookings', methods=('GET', 'POST'))
+
+# Admins Current Bookings
+@bp.route('/admin/bookings', methods=('GET', 'POST'))
 def current_bookings():
     if session.get('user_id') == 1:
 
@@ -116,6 +152,7 @@ def current_bookings():
         return render_template('auth/current_bookings.html', current_bookings=current_booked)
     else:
         return redirect(url_for('admin.login'))
+
 
 # Admins Booking platform: sends back to the client a deposit amount and time length
 @bp.route('/admin/booking/<int:request_id>', methods=('GET', 'POST'))
@@ -169,3 +206,51 @@ def confirm_booking(token):
         return redirect(url_for('landing.landing'))
 
 
+# Updates the booking table with the confirmed booking of tattoo
+@bp.route('/admin/update-schedule', methods=('GET', 'POST'))
+def update_bookings():
+    try:
+        # Get info on booking
+        data = request.json
+        print(data)
+
+        # Strip the prefix for uuid
+        e_uuid = data['event_uri'].removeprefix("https://api.calendly.com/scheduled_events/")
+        print(e_uuid)
+        booking_id = data['booking_id']
+        print(booking_id)
+
+        # Use data to get booking date
+        file_path = Path(__file__).parent / "artist_info.json"
+        with open(file_path, "r") as f:
+            artist_info = json.load(f)
+
+        url = f"https://api.calendly.com/scheduled_events/{e_uuid}"
+        headers = {
+            "Authorization": f"Bearer {artist_info['calendly_api_token']}",
+            "Content-Type": "application/json"
+        }
+        params = {"uuid": f"{e_uuid}",
+                  "user": f"{artist_info['calendly_user']}"}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            event = response.json()['resource']
+            start_time = event['start_time']
+            start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.UTC)
+            eastern = pytz.timezone("US/Eastern")
+            local_start_time = start_time.astimezone(eastern)
+            print(local_start_time.strftime("%m/%d/%y %I:%M%p"))
+            db = get_db()
+            db.execute('UPDATE bookings SET date = ? WHERE bid = ?',
+                       (local_start_time, booking_id,))
+            logging.debug("Bookings date updated")
+            db.execute('UPDATE bookings SET confirmed = 1 WHERE bid = ?',
+                       (booking_id,))
+            logging.debug("Bookings confirmation updated")
+            db.commit()
+
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400

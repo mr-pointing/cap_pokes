@@ -1,6 +1,9 @@
 {% extends 'auth/admin_base.html' %}
 
 {% block content %}
+    <div class="cta-buttons" style="padding:1em;">
+            <a href="{{ url_for('admin.view_searched_bookings')}}" class="btn btn-primary">Search</a>
+    </div>
     {% for booking in current_bookings %}
         <div class="admin-container">
             <div class="request-info">
@@ -10,7 +13,6 @@
                     <p><strong>Placement:</strong> {{ booking['placement'] }}</p>
                     <p><strong>Budget:</strong> {{ booking['budget'] }}</p>
                     <p><strong>Date:</strong> {{ booking['date'] }}</p>
-                    <p><strong>Time:</strong> {{ booking['time'] }}</p>
                     <p><strong>Link:</strong> {{ booking['link'] }}</p>
                 </div>
                 <div class="request-field">
