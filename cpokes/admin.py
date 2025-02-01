@@ -12,10 +12,13 @@ from flask import (
 from pathlib import Path
 from cpokes.db import get_db
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 import cpokes.email_funcs as ef
 import json
 from datetime import datetime
 import pytz
+import os
+import random
 
 bp = Blueprint('admin', __name__)
 
@@ -57,7 +60,7 @@ def logout():
 def get_unbooked_requests():
     db = get_db()
     unbooked_requests = db.execute(
-        'SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0'
+        'SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0 ORDER BY rid DESC'
     ).fetchall()
     return unbooked_requests
 
@@ -65,8 +68,12 @@ def get_unbooked_requests():
 # Retrieve all booked appointments
 def get_booked():
     db = get_db()
+
+    # Create variable to grab current time so we only get bookings in the future
+    now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
     booked = db.execute(
-        'SELECT * FROM bookings JOIN main.client c on bookings.uid = c.uid'
+        'SELECT * FROM bookings JOIN main.client c on bookings.uid = c.uid WHERE date > ? ORDER BY bid DESC', (now,)
     ).fetchall()
     return booked
 
@@ -167,6 +174,7 @@ def booking(request_id):
         print(f"Type: {request.form.get('type')}")
         # Generate unique token
         token = str(uuid.uuid4())
+
         # Commit to database
         try:
 
@@ -174,11 +182,11 @@ def booking(request_id):
             booking_link = url_for('admin.confirm_booking', token=token, _external=True)
             ef.send_booking_form(request_for_book['email'], booking_link)
 
-            db.execute('INSERT INTO bookings (uid, rid, deposit, type, size, placement, budget, token, reference, link)'
-                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            db.execute('INSERT INTO bookings (uid, rid, deposit, type, size, placement, budget, token, reference, link, estimate)'
+                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                        (request_for_book['uid'], request_id, request.form.get('deposit'), request.form.get('type'),
                         request_for_book['size'], request_for_book['placement'], request_for_book['budget'], token,
-                        request_for_book['reference'], booking_link))
+                        request_for_book['reference'], booking_link, request.form.get('estimate')))
             logging.debug("Bookings updated")
             db.execute('UPDATE requests SET booked = 1 WHERE rid = ?',
                        (request_id,))
@@ -200,8 +208,10 @@ def confirm_booking(token):
                              (token,)).fetchone()
     booking_tokens = [row['token'] for row in db.execute('SELECT token FROM bookings').fetchall()]
 
-    if token in booking_tokens:
+    if token in booking_tokens and client_info['confirmed'] == 0:
         return render_template('client_booking.html', request=client_info)
+    elif token in booking_tokens:
+        return render_template('thank_you.html')
     else:
         return redirect(url_for('landing.landing'))
 
@@ -254,3 +264,97 @@ def update_bookings():
         return jsonify({"status": "success"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
+
+# Admin Manual Entry form
+@bp.route('/admin/manual_form', methods=('GET', 'POST',))
+def manual_entry_form():
+    if session.get('user_id') == 1:
+        if request.method == 'POST':
+            db = get_db()
+            error = None
+
+            logging.debug(f"Form Data: {request.form}")
+
+            flash_custom = 0 if request.form['flash-or-custom'] == "Flash" else 1
+            custom_idea = request.form.get('custom_idea', '')
+            uploaded_file = request.files.get('reference') if flash_custom == 0 else request.files.get('cust_reference')
+
+            # Storing uploaded files into uploads directory
+            if uploaded_file and uploaded_file.filename != '':
+                filename = secure_filename(uploaded_file.filename)
+                unique_filename = f"{uuid.uuid4()}_{filename}"
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+                uploaded_file.save(file_path)
+                reference = f"/uploads/{unique_filename}"
+            else:
+                reference = None
+            logging.debug(f"File path: {reference}")
+
+            m_size = request.form['size']
+            m_placement = request.form['placement']
+            m_type = request.form.get('type')
+            m_deposit = request.form.get('deposit')
+            m_estimate = request.form['estimate']
+            m_client_email = request.form['email']
+            m_rid = random.randint(100, 10000)
+
+            # Generate unique token
+            m_token = str(uuid.uuid4())
+
+            # Check if client already exists
+            existing_client = db.execute('SELECT * FROM client WHERE email = ?', (m_client_email,)).fetchone()
+            logging.debug(f"Client Exists: {existing_client}")
+
+            if existing_client:
+                uid_row = db.execute('SELECT uid FROM client WHERE email = ?', (m_client_email,)).fetchone()
+                uid = uid_row['uid'] if uid_row else None
+                if error is None:
+                    try:
+                        # Generate link
+                        m_booking_link = url_for('admin.confirm_booking', token=m_token, _external=True)
+                        ef.send_booking_form(m_client_email, m_booking_link)
+                        db.execute(
+                            'INSERT INTO bookings (uid, rid, deposit, type, size, placement, estimate,'
+                            ' token, reference, custom_idea, link)'
+                            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            (uid, m_rid, m_deposit, m_type, m_size, m_placement, m_estimate, m_token, reference,
+                             custom_idea, m_booking_link)
+                        )
+                        db.commit()
+                        logging.debug("Bookings updated")
+                        return render_template('auth/link_page.html', booking_link=m_booking_link)
+                    except db.IntegrityError as e:
+                        print(e)
+            else:
+                m_name = request.form['name']
+                m_phone = request.form['phone']
+                m_pronouns = request.form['pronouns']
+                db.execute(
+                    'INSERT INTO client (email, name, phone, pronouns) VALUES (?, ?, ?, ?)',
+                    (m_client_email, m_name, m_phone, m_pronouns)
+                )
+                db.commit()
+                logging.debug(f"Client entered successfully")
+                if error is None:
+                    uid_row = db.execute('SELECT uid FROM client WHERE email = ?', (m_client_email,)).fetchone()
+                    uid = uid_row['uid'] if uid_row else None
+                    try:
+                        # Generate link
+                        m_booking_link = url_for('admin.confirm_booking', token=m_token, _external=True)
+                        ef.send_booking_form(m_client_email, m_booking_link)
+                        db.execute(
+                            'INSERT INTO bookings (uid, rid, deposit, type, size, placement, estimate,'
+                            ' token, reference, custom_idea, link)'
+                            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            (uid, m_rid, m_deposit, m_type, m_size, m_placement, m_estimate, m_token, reference,
+                             custom_idea, m_booking_link)
+                        )
+                        db.commit()
+                        logging.debug("Bookings updated")
+                        return render_template('auth/link_page.html', booking_link=m_booking_link)
+                    except db.IntegrityError as e:
+                        print(e)
+
+        return render_template('auth/manual_entry.html')
+    else:
+        return redirect(url_for('admin.login'))

@@ -41,7 +41,9 @@ CREATE TABLE bookings (
     size TEXT NOT NULL,
     placement TEXT NOT NULL,
     budget TEXT,
+    estimate TEXT,
     token TEXT NOT NULL,
     reference TEXT,
+    custom_idea TEXT,
     link TEXT
 );

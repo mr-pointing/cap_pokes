@@ -10,7 +10,7 @@
                 <option value="uid">Client's ID</option>
                 <option value="name">Client's Name</option>
                 <option value="email">Client's Email</option>
-                <option value="booked">Booked (1 for booked, 0 for unbooked)</option>
+                <option value="confirmed">Booked (1 for booked, 0 for unbooked)</option>
             </select>
         </div>
         <div class="form-group">
@@ -29,6 +29,9 @@
                     <p><strong>Size:</strong> {{ result['size'] }}</p>
                     <p><strong>Placement:</strong> {{ result['placement'] }}</p>
                     <p><strong>Budget:</strong> {{ result['budget'] }}</p>
+                    <p><strong>Estimate: </strong> {{ result['estimate'] }}</p>
+                    <p><strong>Date:</strong> {{ result['date'] }}</p>
+                    <p><strong>Link:</strong> {{ result['link'] }}</p>
                 </div>
                 <div class="request-field">
                     <h3>Customer Information</h3>

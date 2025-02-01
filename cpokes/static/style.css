@@ -19,6 +19,14 @@
     font-style: normal;
 }
 
+@font-face {
+  font-family: system-ui;
+  font-style: normal;
+  font-weight: 300;
+  src: local(".SFNSText-Light"), local(".HelveticaNeueDeskInterface-Light"), local(".LucidaGrandeUI"), local("Ubuntu Light"), local("Segoe UI Light"), local("Roboto-Light"), local("DroidSans"), local("Tahoma");
+}
+
+
 
 /* Color variables */
 :root {
@@ -29,7 +37,7 @@
 }
 
 body {
-    font-family: "Alagard", serif;
+    font-family: "Alagard", serif, system-ui;
     line-height: 1.6;
     color: var(--primary-black);
     background-color: var(--primary-beige);
@@ -191,7 +199,7 @@ footer {
     font-size: 28px;
     color: var(--secondary-beige);
     text-align: left;
-
+    min-width: 10em;
 }
 
 .form-group {
