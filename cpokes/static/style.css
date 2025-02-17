@@ -235,14 +235,16 @@ input, textarea, select, button {
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .request-info {
-    display: grid;
+    display: flow-root;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
     margin-bottom: 1.5rem;
     padding: 5px 5px;
+    overflow: clip;
 }
 
 #custom_idea {
@@ -370,4 +372,23 @@ input, textarea, select, button {
 
 .admin-container {
     background-color:rgba(230, 213, 195, 0.15);
+}
+
+/* Portfolio Styles */
+
+.portfolio-top {
+    display:inline-flex;
+    padding: 2em;
+}
+
+.bio-pic {
+    padding: 1em;
+}
+
+.bio {
+    padding: 1em;
+}
+
+.no_link_decorations {
+    color: var(--primary-beige);
 }

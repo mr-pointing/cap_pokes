@@ -15,3 +15,6 @@ bp = Blueprint('landing', __name__)
 def landing():
     return render_template('landing.html')
 
+@bp.route('/portfolio')
+def portfolio():
+    return render_template('portfolio.html')

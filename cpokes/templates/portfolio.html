@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="portfolio-top">
+        <img src="/static/profile_pic.png" alt="profile picture" width="300" height="300" class="bio-pic">
+        <p class="bio">☆ Decorations for this lifetime ☆</p>
+    </div>
+
+{#    Instagram option, leaving out for now #}
+{#    <img src="/static/2027199.png" alt="chain" width="100%" height="500">#}
+{#    <behold-widget feed-id="dd2L3TuEiBIhCtUka7iA"></behold-widget>#}
+{#    <script>#}
+{#      (() => {#}
+{#        const d=document,s=d.createElement("script");s.type="module";#}
+{#        s.src="https://w.behold.so/widget.js";d.head.append(s);#}
+{#      })();#}
+{#    </script>#}
+
+    <div class="gallery-grid">
+        <div class="gallery-item">
+            <img src="/static/profile_pic.png" alt="profile picture" width="300" height="300">
+        </div>
+        <div class="gallery-item">
+            <img src="/static/profile_pic.png" alt="profile picture" width="300" height="300">
+        </div>
+        <div class="gallery-item">
+            <img src="/static/profile_pic.png" alt="profile picture" width="300" height="300">
+        </div>
+    </div>
+
+{% endblock %}

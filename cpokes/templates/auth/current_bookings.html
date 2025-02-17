@@ -14,7 +14,7 @@
                     <p><strong>Budget:</strong> ${{ booking['budget'] }}</p>
                     <p><strong>Estimate: </strong> ${{ booking['estimate'] }}</p>
                     <p><strong>Date:</strong> {{ booking['date'] }}</p>
-                    <p><strong>Link:</strong> {{ booking['link'] }}</p>
+                    <p><strong>Link:</strong><a href="{{ booking['link'] }}">{{ booking['link'] }}</a></p>
                 </div>
                 <div class="request-field">
                     <h3>Customer Information</h3>
