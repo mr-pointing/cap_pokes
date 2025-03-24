@@ -3,17 +3,13 @@ Title: Capricorn Pokes Booking Site
 Author: Richard Pointing
 Purpose: Email functions page, contains all the functions needed to send emails
 """
-import json
-from pathlib import Path
 from googleapiclient.errors import HttpError
 import yagmail
+from cpokes.db import artist_json
 
 # Sends request form to user
 def send_request_email(request_form):
-    # Opens JSON file with artist info
-    file_path = Path(__file__).parent / "artist_info.json"
-    with open(file_path, "r") as f:
-        artist_info = json.load(f)
+    artist_info = artist_json()
 
     receiver = request_form.form["email"]
     body = f"Thanks for requesting to book a tattoo with me! I should "\
@@ -37,11 +33,8 @@ def send_request_email(request_form):
         print(f"An error occurred: {error}")
 
 # Sends notification to artist about their being a new request
-def send_request_updates(request_form):
-    # Opens JSON file with artist info
-    file_path = Path(__file__).parent / "artist_info.json"
-    with open(file_path, "r") as f:
-        artist_info = json.load(f)
+def send_request_updates():
+    artist_info = artist_json()
 
     receiver = artist_info['email']
     body = "You've got a new request! Check it out: "
@@ -58,10 +51,7 @@ def send_request_updates(request_form):
         print(f"An error occurred: {error}")
 
 def send_booking_form(client_email, booking_link):
-    # Opens JSON file with artist info
-    file_path = Path(__file__).parent / "artist_info.json"
-    with open(file_path, "r") as f:
-        artist_info = json.load(f)
+    artist_info = artist_json()
 
     receiver = client_email
     body = f"Thanks for requesting a tattoo with me! Happy to say I'd like to book a tattoo with you!"\

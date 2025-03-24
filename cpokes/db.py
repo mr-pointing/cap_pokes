@@ -5,6 +5,8 @@ Purpose: Database file, sets up the database for us
 """
 import sqlite3
 import click
+import json
+from pathlib import Path
 from flask import current_app, g
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -41,10 +43,18 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
+# Command to quickly return artist info from JSON
+def artist_json():
+    file_path = Path(__file__).parent / "artist_info.json"
+    with open(file_path, "r") as f:
+        artist_json_dump = json.load(f)
+    return artist_json_dump
+
 def init_admin():
+    artist_information = artist_json()
     db = get_db()
     username = "admin"
-    password = "password"
+    password = artist_information['admin_pw']
     hashed = generate_password_hash(password)
 
     db.execute(
