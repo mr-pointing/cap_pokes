@@ -80,7 +80,7 @@ def get_unbooked_requests():
 def get_booked():
     db = get_db()
 
-    # Create variable to grab current time so we only get bookings in the future
+    # Create variable to grab current time, so we only get bookings in the future
     now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     booked = db.execute(
