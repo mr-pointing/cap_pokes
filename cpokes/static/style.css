@@ -57,7 +57,13 @@ header {
 
 .title{
     font-size: 8vw;
-    letter-spacing: 24px;
+    letter-spacing: 0.2em;
+    text-align: center;
+}
+
+.title > a {
+    text-decoration: none;
+    color: #c9baab;
     text-align: center;
 }
 
@@ -69,7 +75,7 @@ header {
 .tagline {
     font-style: italic;
     margin-top: 0.5rem;
-    font-size: 28px;
+    font-size: 4vw;
 }
 
 .tagline:hover {
@@ -190,7 +196,7 @@ footer {
 
     body {
         width: 100%;
-        min-width: 375px;
+        min-width: 380px;
     }
 
     .gallery-grid {
