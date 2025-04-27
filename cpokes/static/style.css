@@ -41,6 +41,8 @@ body {
     line-height: 1.6;
     color: var(--primary-black);
     background-color: var(--primary-beige);
+    overflow-x: hidden;
+    min-height: 100vh;
 }
 
 /* Header styles */
@@ -82,7 +84,7 @@ header {
     text-decoration: none;
     border-radius: 4px;
     transition: all 0.3s ease;
-    width: 200px;
+    width: 15rem;
     font-size: 2rem;
 }
 
@@ -183,7 +185,12 @@ footer {
     .cta-buttons .btn {
         display: block;
         margin: 1rem auto;
-        width: 80%;
+        width: 75%;
+    }
+
+    body {
+        width: 100%;
+        min-width: 375px;
     }
 
     .gallery-grid {
