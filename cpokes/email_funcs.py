@@ -23,7 +23,7 @@ def send_request_email(request_form):
            f"<strong>Placement:</strong> {request_form.form['placement']}\n"\
            f"<strong>Budget:</strong> {request_form.form['budget']}\n"
     try:
-        yag = yagmail.SMTP(artist_info['email_for_artist'], artist_info['efa_pw'])
+        yag = yagmail.SMTP(artist_info['artist_email'], artist_info['yag_pw'])
         yag.send(
             to=receiver,
             subject="Booking Request Information",
@@ -58,7 +58,7 @@ def send_booking_form(client_email, booking_link):
            f"See attached form to get started: {booking_link}\n"
 
     try:
-        yag = yagmail.SMTP(artist_info['email_for_artist'], artist_info['efa_pw'])
+        yag = yagmail.SMTP(artist_info['artist_email'], artist_info['yag_pw'])
         yag.send(
             to=receiver,
             subject="Booking Confirmation Link",
