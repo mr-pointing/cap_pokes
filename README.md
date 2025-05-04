@@ -10,7 +10,7 @@ Instagram has been a major platform for finding and booking tattoos for the last
 
 ## To Do
 
-- [ ] Portfolio Page
+- [x] Portfolio Page
 - [ ] Full Calendar/No Calendly
 - [ ] Mobile Layout
 
