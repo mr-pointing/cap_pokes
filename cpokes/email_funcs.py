@@ -6,6 +6,7 @@ Purpose: Email functions page, contains all the functions needed to send emails
 from googleapiclient.errors import HttpError
 import yagmail
 from cpokes.db import artist_json
+from flask import url_for
 
 # Sends request form to user
 def send_request_email(request_form):
@@ -36,8 +37,8 @@ def send_request_email(request_form):
 def send_request_updates():
     artist_info = artist_json()
 
-    receiver = artist_info['email']
-    body = "You've got a new request! Check it out: "
+    receiver = artist_info['artist_email']
+    body = f"You've got a new request! Check it out: https://www.capricornpokes.com/{url_for('admin.login')}"
 
     try:
         yag = yagmail.SMTP(artist_info['email_for_artist'], artist_info['efa_pw'])
