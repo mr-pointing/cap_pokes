@@ -91,7 +91,7 @@ def request_tattoo():
                     )
                     db.commit()
                     ef.send_request_email(request)
-                    # ef.send_request_updates(request)
+                    ef.send_request_updates()
                     logging.debug("Inserted client and request into requests table.")
                     return redirect(url_for('landing.landing'))
                 except db.IntegrityError as e:
