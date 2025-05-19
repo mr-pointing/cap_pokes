@@ -13,8 +13,7 @@ def send_request_email(request_form):
     artist_info = artist_json()
 
     receiver = request_form.form["email"]
-    body = f"Thanks for requesting to book a tattoo with me! I should "\
-           f"get back to your request in 3 - 5 days.\n\n"\
+    body = f"Thanks for requesting to book a tattoo with me! I should get back to your request in 3 - 5 days.\n\n"\
            f"Your Request Form:\n"\
            f"<strong>Name:</strong> {request_form.form['name']}\n"\
            f"<strong>Email</strong>: {request_form.form['email']}\n"\
@@ -34,17 +33,18 @@ def send_request_email(request_form):
         print(f"An error occurred: {error}")
 
 # Sends notification to artist about their being a new request
-def send_request_updates():
+def send_request_updates(request_form):
     artist_info = artist_json()
 
     receiver = artist_info['artist_email']
-    body = f"You've got a new request! Check it out: https://www.capricornpokes.com/{url_for('admin.login')}"
+    body = (f"You've got a new request from {request_form.form['name']}! Check it out: "
+            f"https://www.capricornpokes.com{url_for('admin.login')}")
 
     try:
         yag = yagmail.SMTP(artist_info['email_for_artist'], artist_info['efa_pw'])
         yag.send(
             to=receiver,
-            subject="You've got a new request!",
+            subject=f"You've got a new request from {request_form.form['name']}!",
             contents=body,
         )
 
