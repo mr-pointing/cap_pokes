@@ -11,10 +11,8 @@ import random
 import uuid
 from datetime import datetime
 
-import cpokes.email_funcs as ef
 import pytz
 import requests
-from cpokes.db import artist_json, get_db
 from flask import (
     Blueprint,
     current_app,
@@ -28,6 +26,9 @@ from flask import (
 )
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
+
+import cpokes.email_funcs as ef
+from cpokes.db import artist_json, get_db
 
 bp = Blueprint("admin", __name__)
 
