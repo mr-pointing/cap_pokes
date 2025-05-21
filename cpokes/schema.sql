@@ -13,6 +13,7 @@ CREATE TABLE client (
     uid INTEGER PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
+    alt_name TEXT,
     phone TEXT,
     pronouns TEXT
 );

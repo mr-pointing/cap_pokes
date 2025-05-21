@@ -43,9 +43,9 @@ def request_tattoo():
         if uploaded_file and uploaded_file.filename != "":
             filename = secure_filename(uploaded_file.filename)
             unique_filename = f"{uuid.uuid4()}_{filename}"
-            file_path = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], unique_filename
-            )
+            upload_folder = current_app.config["UPLOAD_FOLDER"]
+            os.makedirs(upload_folder, exist_ok=True)
+            file_path = os.path.join(upload_folder, unique_filename)
             uploaded_file.save(file_path)
             reference = f"/uploads/{unique_filename}"
         else:
@@ -96,11 +96,12 @@ def request_tattoo():
 
         else:
             name = request.form["name"]
+            alt_name = request.form["alt_name"]
             phone = request.form["phone"]
             pronouns = request.form["pronouns"]
             db.execute(
-                "INSERT INTO client (email, name, phone, pronouns) VALUES (?, ?, ?, ?)",
-                (client_email, name, phone, pronouns),
+                "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?, ?)",
+                (client_email, name, alt_name, phone, pronouns),
             )
             db.commit()
             logging.debug(f"Client entered successfully")
@@ -127,7 +128,7 @@ def request_tattoo():
                     )
                     db.commit()
                     ef.send_request_email(request)
-                    ef.send_request_updates()
+                    ef.send_request_updates(request)
                     logging.debug("Inserted client and request into requests table.")
                     return redirect(url_for("landing.landing"))
                 except db.IntegrityError as e:

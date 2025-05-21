@@ -434,11 +434,12 @@ def manual_entry_form():
                     print(e)
         else:
             m_name = request.form["name"]
+            m_alt_name = request.form["alt_name"]
             m_phone = request.form["phone"]
             m_pronouns = request.form["pronouns"]
             db.execute(
-                "INSERT INTO client (email, name, phone, pronouns) VALUES (?, ?, ?, ?)",
-                (m_client_email, m_name, m_phone, m_pronouns),
+                "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?)",
+                (m_client_email, m_name, m_alt_name, m_phone, m_pronouns),
             )
             db.commit()
             logging.debug("Client entered successfully")
