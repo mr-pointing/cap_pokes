@@ -4,7 +4,6 @@ Author: Richard Pointing
 Purpose: Init file, stores app factory for site
 """
 
-import base64
 import os
 
 from flask import Flask

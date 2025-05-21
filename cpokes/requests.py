@@ -19,7 +19,6 @@ logging.basicConfig(level=logging.DEBUG)
 bp = Blueprint("requests", __name__)
 
 
-# TODO: Add preferred name category to add to client info
 @bp.route("/requests", methods=["GET", "POST"])
 def request_tattoo():
     """
@@ -130,7 +129,7 @@ def request_tattoo():
                     ef.send_request_email(request)
                     ef.send_request_updates(request)
                     logging.debug("Inserted client and request into requests table.")
-                    return redirect(url_for("landing.landing"))
+                    return render_template("request_ty.html")
                 except db.IntegrityError as e:
                     logging.error(f"Database error: {e}")
                     error = "Something went wrong!"
