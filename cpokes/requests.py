@@ -89,7 +89,7 @@ def request_tattoo():
                     ef.send_request_email(request)
                     ef.send_request_updates(request)
                     logging.debug("Inserted request into requests table.")
-                    return redirect(url_for("landing.landing"))
+                    return render_template("request_ty.html")
                 except db.IntegrityError:
                     error = "Something went wrong!"
 
@@ -135,6 +135,3 @@ def request_tattoo():
                     error = "Something went wrong!"
 
     return render_template("request.html")
-
-
-# TODO: Make a landing page for client so they know their request went through
