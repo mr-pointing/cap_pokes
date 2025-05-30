@@ -68,8 +68,13 @@ def send_booking_form(client_email, booking_link):
 
     receiver = client_email
     body = (
-        f"Thanks for requesting a tattoo with me! Happy to say I'd like to book a tattoo with you!"
-        f"See attached form to get started: {booking_link}\n"
+        "Thank you so much for filling out a form requesting a tattoo appointment! "
+        "I’m happy to work on this project with you.\n\nHere is a link to my booking calendar "
+        "as well as an estimate price for your tattoo. Once you’ve booked, you'll receive a "
+        "confirmation email with the studio address and all the details. "
+        "If you have any questions, please reach out to capricornpokes@gmail.com. "
+        "Excited to work with you on this!\n\n"
+        f"{booking_link}"
     )
 
     try:

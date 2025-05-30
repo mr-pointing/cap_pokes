@@ -23,3 +23,11 @@ def portfolio():
     Prepares portfolio page
     """
     return render_template("portfolio.html")
+
+
+@bp.route("/faq")
+def faq():
+    """
+    Serves the FAQ page
+    """
+    return render_template("faq.html")
