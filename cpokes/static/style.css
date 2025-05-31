@@ -516,3 +516,9 @@ main {
 .faq_section h2 {
   word-wrap: break-word;
 }
+
+@media (max-width:800px) {
+    .faq_section{
+        padding: 2rem 1% 2rem 1%;
+    }
+}
