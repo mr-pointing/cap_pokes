@@ -27,7 +27,9 @@ CREATE TABLE requests (
     placement TEXT NOT NULL,
     budget TEXT,
     reference TEXT NOT NULL,
-    booked INTEGER DEFAULT 0
+    reference2 TEXT,
+    booked INTEGER DEFAULT 0,
+    archived INTEGER DEFAULT 0
 );
 
 CREATE TABLE bookings (

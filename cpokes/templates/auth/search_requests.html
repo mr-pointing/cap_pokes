@@ -6,6 +6,7 @@
             <label for="column">Column to Search In: </label>
             <select id="column" name="column" required>
                 <option value="">Select a column</option>
+                <option value="archived">Archived (1 for archived, 0 for not)</option>
                 <option value="rid">Request ID</option>
                 <option value="uid">Client's ID</option>
                 <option value="name">Client's Name</option>
@@ -41,6 +42,7 @@
                 <div class="request-images">
                     <p>References:</p>
                     <img src="{{ result['reference'] }}" width="400" height="400">
+                    {% if result['reference2'] %}<img src="{{ result['reference2'] }}" width="400" height="400">{% endif %}
 
                     {%  if result['flash_custom'] == 1 %}
 

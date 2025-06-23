@@ -91,7 +91,7 @@ def get_unbooked_requests():
     """
     db = get_db()
     unbooked_requests = db.execute(
-        "SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0 ORDER BY rid DESC"
+        "SELECT * FROM requests JOIN main.client c ON requests.uid = c.uid WHERE requests.booked = 0 AND requests.archived = 0 ORDER BY rid DESC"
     ).fetchall()
     return unbooked_requests
 
@@ -183,9 +183,13 @@ def current_requests():
     Admin's current requests
     """
     if request.method == "POST":
-        request_id = request.form.get("accept_request")
-        if request_id:
-            return redirect(url_for("admin.booking", request_id=request_id))
+        acc_req = request.form.get("accept_request")
+        arc_req = request.form.get("archive_request")
+
+        if acc_req:
+            return redirect(url_for("admin.booking", request_id=acc_req))
+        elif arc_req:
+            return redirect(url_for("admin.archive_request", request_id=arc_req))
 
     current_reqs = get_unbooked_requests()
     return render_template("auth/current_requests.html", current_requests=current_reqs)
@@ -481,3 +485,17 @@ def manual_entry_form():
                     print(e)
 
     return render_template("auth/manual_entry.html")
+
+
+@bp.route("/admin/archive/<int:request_id>", methods=("GET", "POST"))
+@admin_required
+def archive_request(request_id):
+    """
+    Archives a request
+    """
+    db = get_db()
+    db.execute("UPDATE requests SET archived = 1 WHERE rid = ?", (request_id,))
+    db.commit()
+    logging.debug("Request archived")
+    current_reqs = get_unbooked_requests()
+    return render_template("auth/current_requests.html", current_requests=current_reqs)

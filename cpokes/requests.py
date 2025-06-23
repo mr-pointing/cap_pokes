@@ -37,18 +37,34 @@ def request_tattoo():
             if flash_custom == 0
             else request.files.get("cust_reference")
         )
+        uploaded_file2 = (
+            request.files.get("reference2")
+            if flash_custom == 0
+            else request.files.get("cust_reference2")
+        )
+
+        upload_folder = current_app.config["UPLOAD_FOLDER"]
 
         # Store uploaded images in uploads directory
         if uploaded_file and uploaded_file.filename != "":
             filename = secure_filename(uploaded_file.filename)
             unique_filename = f"{uuid.uuid4()}_{filename}"
-            upload_folder = current_app.config["UPLOAD_FOLDER"]
             os.makedirs(upload_folder, exist_ok=True)
             file_path = os.path.join(upload_folder, unique_filename)
             uploaded_file.save(file_path)
             reference = f"/uploads/{unique_filename}"
         else:
             reference = None
+
+        if uploaded_file2 and uploaded_file2.filename != "":
+            filename = secure_filename(uploaded_file2.filename)
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            os.makedirs(upload_folder, exist_ok=True)
+            file_path = os.path.join(upload_folder, unique_filename)
+            uploaded_file2.save(file_path)
+            reference2 = f"/uploads/{unique_filename}"
+        else:
+            reference2 = None
 
         size = request.form["size"]
         placement = request.form["placement"]
@@ -57,6 +73,7 @@ def request_tattoo():
 
         logging.debug(f"Form data: {request.form}")
         logging.debug(f"File path: {reference}")
+        logging.debug(f"File path for 2: {reference2}")
 
         existing_client = db.execute(
             "SELECT * FROM client WHERE email=?", (client_email,)
@@ -72,8 +89,8 @@ def request_tattoo():
                 try:
                     db.execute(
                         "INSERT INTO requests (uid, flash_custom, custom_idea, size, "
-                        "placement, budget, reference, booked) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        "placement, budget, reference, reference2, booked) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         (
                             uid,
                             flash_custom,
@@ -82,6 +99,7 @@ def request_tattoo():
                             placement,
                             budget,
                             reference,
+                            reference2,
                             0,
                         ),
                     )
@@ -112,8 +130,8 @@ def request_tattoo():
                     uid = uid_row["uid"] if uid_row else None
                     db.execute(
                         "INSERT INTO requests (uid, flash_custom, custom_idea, size, "
-                        "placement, budget, reference, booked) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        "placement, budget, reference, reference2, booked) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         (
                             uid,
                             flash_custom,
@@ -122,6 +140,7 @@ def request_tattoo():
                             placement,
                             budget,
                             reference,
+                            reference2,
                             0,
                         ),
                     )

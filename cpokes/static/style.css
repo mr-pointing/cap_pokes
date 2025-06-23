@@ -283,6 +283,7 @@ button {
   color: var(--primary-black);
   max-height: 4rem;
   max-width: 400px;
+  margin: 1.5rem;
 }
 
 .request-field {
@@ -517,8 +518,9 @@ main {
   word-wrap: break-word;
 }
 
-@media (max-width:800px) {
-    .faq_section{
-        padding: 2rem 1% 2rem 1%;
-    }
+@media (max-width: 800px) {
+  .faq_section {
+    padding: 2rem 1% 2rem 1%;
+  }
 }
+

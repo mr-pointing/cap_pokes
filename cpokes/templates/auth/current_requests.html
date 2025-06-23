@@ -25,6 +25,7 @@
                 <div class="request-images">
                     <p>References:</p>
                     <img src="{{ request['reference'] }}" width="400" height="400">
+                    {% if request['reference2'] %}<img src="{{ request['reference2'] }}" width="400" height="400">{% endif %}
 
                     {%  if request['flash_custom'] == 1 %}
 
@@ -37,6 +38,7 @@
                 </div>
                 <form method="post">
                     <button type="submit" class="submit-btn" id="request-submit" name="accept_request" value="{{ request['rid'] }}">Accept?</button>
+                    <button type="submit" class="submit-btn" id="request-submit" name="archive_request" value="{{ request['rid'] }}" onclick="return confirm('Are you sure you want to archive?')" >Archive?</button>
                 </form>
             </div>
         </div>
