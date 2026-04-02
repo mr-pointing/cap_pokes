@@ -33,6 +33,34 @@ from cpokes.db import artist_json, get_db
 bp = Blueprint("admin", __name__)
 
 
+SEARCHABLE_COLUMNS = {
+    "requests": {
+        "name": "c.name",
+        "email": "c.email",
+        "placement": "requests.placement",
+        "size": "requests.size",
+        "budget": "requests.budget",
+        "pronouns": "c.pronouns",
+        "rid": "requests.rid",
+        "archived": "requests.archived",
+        "booked": "requests.booked",
+        "uid": "requests.uid",
+    },
+    "bookings": {
+        "name": "c.name",
+        "email": "c.email",
+        "placement": "bookings.placement",
+        "size": "bookings.size",
+        "budget": "bookings.budget",
+        "confirmed": "bookings.confirmed",
+        "date": "bookings.date",
+        "type": "bookings.type",
+        "bid": "bookings.bid",
+        "uid": "c.uid",
+    },
+}
+
+
 @bp.route("/admin", methods=("GET", "POST"))
 def login():
     """
@@ -114,17 +142,33 @@ def get_booked():
 
 def search_table(column, search_term, table):
     """
-    Searches table for results
+    Searches table for results, updated for safer search
     """
     db = get_db()
-    query = f'SELECT * FROM {table} JOIN main.client c on {table}.uid = c.uid WHERE {column} LIKE "%{search_term}%"'
+
+    if table not in SEARCHABLE_COLUMNS:
+        return []
+
+    c_map = SEARCHABLE_COLUMNS[table]
+    if column not in c_map:
+        return []
+
+    sql_column = c_map[column]
+
+    query = f'SELECT * FROM {table} JOIN main.client c on {
+        table}.uid = c.uid WHERE {sql_column} LIKE ?'
+    params = [f"%{search_term}%"]
+
     if table == "requests":
-        query += " AND booked IS 0"
+        query += " AND requests.booked = 0"
+
+    query += f" ORDER BY {table}.uid DESC"
+
     try:
-        search_results = db.execute(query).fetchall()
-        return search_results
-    except db.IntegrityError as e:
-        print(e)
+        return db.execute(query, params).fetchall()
+    except Exception:
+        logging.exception("Search query failed")
+        return []
 
 
 @bp.route("/admin/requests/search", methods=("GET", "POST"))
@@ -133,14 +177,28 @@ def view_searched_requests():
     """
     Search feature for request
     """
+    results = []
+    error = None
+    allowed_columns = SEARCHABLE_COLUMNS["requests"].keys()
+
     if request.method == "POST":
-        col = request.form["column"]
-        term = request.form["search_term"]
-        answers = search_table(col, term, "requests")
-        results = answers
-    else:
-        results = []
-    return render_template("auth/search_requests.html", results=results)
+        col = request.form.get("column", "").strip()
+        term = request.form.get("search_term", "").strip()
+
+        if not col:
+            error = "Please choose a valid search field."
+        elif col not in allowed_columns:
+            error = "Invalid search field selected."
+        elif not term:
+            error = "Please enter a valid search term."
+        else:
+            results = search_table(col, term, "requests")
+
+    return render_template(
+        "auth/search_requests.html",
+        results=results,
+        error=error,
+    )
 
 
 @bp.route("/admin/bookings/search", methods=("GET", "POST"))
@@ -149,14 +207,28 @@ def view_searched_bookings():
     """
     Search feature for booking
     """
+    results = []
+    error = None
+    allowed_columns = SEARCHABLE_COLUMNS["bookings"].keys()
+
     if request.method == "POST":
-        col = request.form["column"]
-        term = request.form["search_term"]
-        answers = search_table(col, term, "bookings")
-        results = answers
-    else:
-        results = []
-    return render_template("auth/search_bookings.html", results=results)
+        col = request.form.get("column", "").strip()
+        term = request.form.get("search_term", "").strip()
+
+        if not col:
+            error = "Please enter a valid search field."
+        elif col not in allowed_columns:
+            error = "Invalid search field selected."
+        elif not term:
+            error = "Please enter a valid search term"
+        else:
+            results = search_table(col, term, "bookings")
+
+    return render_template(
+        "auth/search_bookings.html",
+        results=results,
+        error=error,
+    )
 
 
 @bp.route("/uploads/<filename>")
@@ -231,7 +303,8 @@ def booking(request_id):
         try:
 
             # Generate link
-            booking_link = url_for("admin.confirm_booking", token=token, _external=True)
+            booking_link = url_for(
+                "admin.confirm_booking", token=token, _external=True)
             ef.send_booking_form(request_for_book["email"], booking_link)
 
             db.execute(
@@ -253,7 +326,8 @@ def booking(request_id):
                 ),
             )
             logging.debug("Bookings updated")
-            db.execute("UPDATE requests SET booked = 1 WHERE rid = ?", (request_id,))
+            db.execute(
+                "UPDATE requests SET booked = 1 WHERE rid = ?", (request_id,))
             logging.debug("Requests updated")
             db.commit()
 
@@ -312,7 +386,8 @@ def update_bookings():
             "Authorization": f"Bearer {artist_info['calendly_api_token']}",
             "Content-Type": "application/json",
         }
-        params = {"uuid": f"{e_uuid}", "user": f"{artist_info['calendly_user']}"}
+        params = {"uuid": f"{e_uuid}", "user": f"{
+            artist_info['calendly_user']}"}
 
         response = requests.get(url, headers=headers, params=params)
 
@@ -334,7 +409,8 @@ def update_bookings():
                 ),
             )
             logging.debug("Bookings date updated")
-            db.execute("UPDATE bookings SET confirmed = 1 WHERE bid = ?", (booking_id,))
+            db.execute(
+                "UPDATE bookings SET confirmed = 1 WHERE bid = ?", (booking_id,))
             logging.debug("Bookings confirmation updated")
             db.commit()
 

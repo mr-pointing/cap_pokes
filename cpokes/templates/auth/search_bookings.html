@@ -2,6 +2,9 @@
 
 {% block content %}
     <form method="post">
+      {% if error %}
+        <p> {{ error }} </p>
+      {% endif %}
         <div class="form-group">
             <label for="column">Column to Search In: </label>
             <select id="column" name="column" required>

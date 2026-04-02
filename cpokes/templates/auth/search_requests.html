@@ -1,6 +1,9 @@
 {% extends 'auth/admin_base.html' %}
 
 {% block content %}
+  {% if error %}
+    <p> {{ error }} </p>
+  {% endif %}
     <form method="post">
         <div class="form-group">
             <label for="column">Column to Search In: </label>
