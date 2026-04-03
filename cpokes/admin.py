@@ -134,7 +134,9 @@ def get_booked():
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     booked = db.execute(
-        "SELECT * FROM bookings JOIN main.client c on bookings.uid = c.uid WHERE date > ? ORDER BY bid DESC",
+        "SELECT * FROM bookings "
+        "JOIN main.client c on bookings.uid = c.uid "
+        "WHERE date > ? ORDER BY bid DESC",
         (now,),
     ).fetchall()
     return booked
