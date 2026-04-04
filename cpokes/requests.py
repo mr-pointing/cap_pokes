@@ -7,7 +7,7 @@ Purpose: Requests page, functions to request tattoos
 import logging
 import os
 import uuid
-
+import sqlite3
 from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
@@ -25,12 +25,14 @@ def request_tattoo():
     Creates a new client if they don't already exist, then
     takes their information to make a request
     """
+    error = None
+    upload_folder = current_app.config["UPLOAD_FOLDER"]
+
     if request.method == "POST":
         db = get_db()
-        error = None
 
         flash_custom = 0 if request.form["flash-or-custom"] == "Flash" else 1
-        custom_idea = request.form.get("custom_idea", "")
+        custom_idea = request.form.get("custom_idea", "").strip()
 
         uploaded_file = (
             request.files.get("reference")
@@ -43,114 +45,94 @@ def request_tattoo():
             else request.files.get("cust_reference2")
         )
 
-        upload_folder = current_app.config["UPLOAD_FOLDER"]
+        size = request.form['size']
+        placement = request.form['placement']
+        budget = request.form['budget']
+        client_email = request.form['email']
 
-        # Store uploaded images in uploads directory
-        if uploaded_file and uploaded_file.filename != "":
-            filename = secure_filename(uploaded_file.filename)
-            unique_filename = f"{uuid.uuid4()}_{filename}"
-            os.makedirs(upload_folder, exist_ok=True)
-            file_path = os.path.join(upload_folder, unique_filename)
-            uploaded_file.save(file_path)
-            reference = f"/uploads/{unique_filename}"
-        else:
-            reference = None
+        if not uploaded_file or uploaded_file.filename == "":
+            if flash_custom == 0:
+                error = "A flash screenshot is required."
+            else:
+                error = "A custom reference image is required."
+
+        if error is not None:
+            return render_template("request.html", error=error)
+
+        os.makedirs(upload_folder, exist_ok=True)
+
+        filename = secure_filename(uploaded_file.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        file_path = os.path.join(upload_folder, unique_filename)
+        uploaded_file.save(file_path)
+        reference = f"/uploads/{unique_filename}"
 
         if uploaded_file2 and uploaded_file2.filename != "":
-            filename = secure_filename(uploaded_file2.filename)
-            unique_filename = f"{uuid.uuid4()}_{filename}"
-            os.makedirs(upload_folder, exist_ok=True)
-            file_path = os.path.join(upload_folder, unique_filename)
-            uploaded_file2.save(file_path)
-            reference2 = f"/uploads/{unique_filename}"
+            filename2 = secure_filename(uploaded_file2.filename)
+            unique_filename2 = f"{uuid.uuid4()}_{filename2}"
+            file_path2 = os.path.join(upload_folder, unique_filename2)
+            uploaded_file2.save(file_path2)
+            reference2 = f"/uploads/{unique_filename2}"
         else:
             reference2 = None
 
-        size = request.form["size"]
-        placement = request.form["placement"]
-        budget = request.form["budget"]
-        client_email = request.form["email"]
-
-        logging.debug(f"Form data: {request.form}")
-        logging.debug(f"File path: {reference}")
-        logging.debug(f"File path for 2: {reference2}")
+        logging.debug("Form data: %s", request.form)
+        logging.debug("Primary file path: %s", reference)
+        logging.debug("Secondary file path: %s", reference2)
 
         existing_client = db.execute(
-            "SELECT * FROM client WHERE email=?", (client_email,)
+            "SELECT uid FROM client WHERE email = ?",
+            (client_email,),
         ).fetchone()
-        logging.debug(f"Client Exists: {existing_client}")
 
-        if existing_client:
-            uid_row = db.execute(
-                "SELECT uid FROM client WHERE email=?", (client_email,)
-            ).fetchone()
-            uid = uid_row["uid"] if uid_row else None
-            if error is None:
-                try:
-                    db.execute(
-                        "INSERT INTO requests (uid, flash_custom, custom_idea, size, "
-                        "placement, budget, reference, reference2, booked) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        (
-                            uid,
-                            flash_custom,
-                            custom_idea,
-                            size,
-                            placement,
-                            budget,
-                            reference,
-                            reference2,
-                            0,
-                        ),
-                    )
-                    db.commit()
-                    ef.send_request_email(request)
-                    ef.send_request_updates(request)
-                    logging.debug("Inserted request into requests table.")
-                    return render_template("request_ty.html")
-                except db.IntegrityError:
-                    error = "Something went wrong!"
+        try:
+            if existing_client:
+                uid = existing_client["uid"]
+            else:
+                name = request.form["name"]
+                alt_name = request.form["alt_name"]
+                phone = request.form["phone"]
+                pronouns = request.form["pronouns"]
 
-        else:
-            name = request.form["name"]
-            alt_name = request.form["alt_name"]
-            phone = request.form["phone"]
-            pronouns = request.form["pronouns"]
+                db.execute(
+                    "INSERT INTO client (email, name, alt_name, phone, pronouns) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (client_email, name, alt_name, phone, pronouns),
+                )
+                db.commit()
+
+                uid_row = db.execute(
+                    "SELECT uid FROM client WHERE email = ?",
+                    (client_email,),
+                ).fetchone()
+                uid = uid_row["uid"]
+
             db.execute(
-                "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?, ?)",
-                (client_email, name, alt_name, phone, pronouns),
+                "INSERT INTO requests (uid, flash_custom, custom_idea, size, "
+                "placement, budget, reference, reference2, booked) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    uid,
+                    flash_custom,
+                    custom_idea,
+                    size,
+                    placement,
+                    budget,
+                    reference,
+                    reference2,
+                    0,
+                ),
             )
             db.commit()
-            logging.debug(f"Client entered successfully")
-            if error is None:
-                try:
-                    uid_row = db.execute(
-                        "SELECT uid FROM client WHERE email=?", (client_email,)
-                    ).fetchone()
-                    uid = uid_row["uid"] if uid_row else None
-                    db.execute(
-                        "INSERT INTO requests (uid, flash_custom, custom_idea, size, "
-                        "placement, budget, reference, reference2, booked) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        (
-                            uid,
-                            flash_custom,
-                            custom_idea,
-                            size,
-                            placement,
-                            budget,
-                            reference,
-                            reference2,
-                            0,
-                        ),
-                    )
-                    db.commit()
-                    ef.send_request_email(request)
-                    ef.send_request_updates(request)
-                    logging.debug("Inserted client and request into requests table.")
-                    return render_template("request_ty.html")
-                except db.IntegrityError as e:
-                    logging.error(f"Database error: {e}")
-                    error = "Something went wrong!"
 
-    return render_template("request.html")
+            ef.send_request_email(request)
+            ef.send_request_updates(request)
+
+            logging.debug("Request inserted successfully.")
+            return render_template("request_ty.html")
+
+        except sqlite3.IntegrityError as e:
+            logging.error("Database error while creating request: %s", e)
+            error = "Something went wrong while submitting your request."
+
+    return render_template("request.html", error=error)

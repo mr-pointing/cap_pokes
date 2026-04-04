@@ -524,3 +524,15 @@ main {
   }
 }
 
+.form-error {
+  margin-bottom: 1rem;
+  color: #ffdddd;
+  background-color: #5a1f1f;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+}
+
+.form-help {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
