@@ -10,7 +10,7 @@ import os
 import random
 import uuid
 from datetime import datetime
-
+import sqlite3
 import pytz
 import requests
 from flask import (
@@ -288,11 +288,16 @@ def booking(request_id):
     Admins Booking platform: sends back to the client a deposit amount and time length
     """
     db = get_db()
+    error = None
+
     request_for_book = db.execute(
         "SELECT * FROM requests JOIN main.client c"
         " on requests.uid = c.uid WHERE rid = ?",
         (request_id,),
     ).fetchone()
+
+    if request_for_book == "":
+        error = "Database error while trying to reach request."
 
     if request.method == "POST":
         print("Post reached")
@@ -334,10 +339,12 @@ def booking(request_id):
             db.commit()
 
             return redirect(url_for("admin.index"))
-        except db.IntegrityError as e:
-            print(e)
+        except sqlite3.IntegrityError as e:
+            logging.error(
+                f"Databased error occured for booking form: {e}")
+            error = "Something went wrong with sending booking form."
 
-    return render_template("auth/admin_booking.html", request=request_for_book)
+    return render_template("auth/admin_booking.html", request=request_for_book, error=error)
 
 
 @bp.route("/booking/<token>", methods=("GET", "POST"))
@@ -512,19 +519,25 @@ def manual_entry_form():
                     return render_template(
                         "auth/link_page.html", booking_link=m_booking_link
                     )
-                except db.IntegrityError as e:
-                    print(e)
+                except sqlite3.IntegrityError as e:
+                    logging.error(
+                        f"Databased error occured for booking form: {e}")
+                    error = "Something went wrong with sending booking form."
         else:
             m_name = request.form["name"]
             m_alt_name = request.form["alt_name"]
             m_phone = request.form["phone"]
             m_pronouns = request.form["pronouns"]
-            db.execute(
-                "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?)",
-                (m_client_email, m_name, m_alt_name, m_phone, m_pronouns),
-            )
-            db.commit()
-            logging.debug("Client entered successfully")
+            try:
+                db.execute(
+                    "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?)",
+                    (m_client_email, m_name, m_alt_name, m_phone, m_pronouns),
+                )
+                db.commit()
+                logging.debug("Client entered successfully")
+            except sqlite3.IntegrityError as e:
+                logging.error(f"Database error while creating client: {e}")
+                error = e
             if error is None:
                 uid_row = db.execute(
                     "SELECT uid FROM client WHERE email = ?", (m_client_email,)
@@ -559,10 +572,12 @@ def manual_entry_form():
                     return render_template(
                         "auth/link_page.html", booking_link=m_booking_link
                     )
-                except db.IntegrityError as e:
-                    print(e)
+                except sqlite3.IntegrityError as e:
+                    logging.error(
+                        f"Databased error occured for booking form: {e}")
+                    error = "Something went wrong with sending booking form."
 
-    return render_template("auth/manual_entry.html")
+    return render_template("auth/manual_entry.html", error=error)
 
 
 @bp.route("/admin/archive/<int:request_id>", methods=("GET", "POST"))
