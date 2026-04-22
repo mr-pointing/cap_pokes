@@ -5,7 +5,7 @@ Purpose: Init file, stores app factory for site
 """
 
 import os
-
+from dotenv import load_dotenv
 from flask import Flask
 
 
@@ -13,9 +13,12 @@ def create_app(test_config=None):
     """
     Application factory
     """
+
+    load_dotenv()
+
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY="dev",
+        SECRET_KEY=os.getenv("SECRET_KEY"),
         DATABASE=os.path.join(app.instance_path, "clients.sqlite"),
         # Mappings for image folder
         UPLOAD_FOLDER=os.path.join(app.instance_path, "uploads"),
@@ -26,6 +29,9 @@ def create_app(test_config=None):
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
+
+    if not app.config["SECRET_KEY"]:
+        raise RuntimeError("SECRET_KEY must be set")
 
     try:
         os.makedirs(app.instance_path)
