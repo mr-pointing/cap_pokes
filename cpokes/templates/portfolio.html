@@ -7,25 +7,13 @@
     </div>
 
     <div class="gallery-grid">
+        {% for image in images %}
         <div class="gallery-item">
-            <img class="por-pic" src="/static/portfolio/1.JPG" alt="Tattoo Flash" width="300" height="300">
+          <img class="por-pic" src="{{ url_for('static', filename='portfolio/' + image) }}" alt="{{image[:-4].replace("_", " ")}}" width="300" height="300">
         </div>
-        <div class="gallery-item">
-            <img class="por-pic" src="/static/portfolio/2.JPG" alt="Tattoo Flash" width="300" height="300">
-        </div>
-        <div class="gallery-item">
-            <img class= "por-pic" src="/static/portfolio/3.JPG" alt="Tattoo Flash" width="300" height="300">
-        </div>
-        <div class="gallery-item">
-            <img class= "por-pic" src="/static/portfolio/4.JPG" alt="Tattoo Flash" width="300" height="300">
-        </div>
-        <div class="gallery-item">
-            <img class= "por-pic" src="/static/portfolio/5.JPG" alt="Tattoo Flash" width="300" height="300">
-        </div>
-        <div class="gallery-item">
-            <img class= "por-pic" src="/static/portfolio/6.JPG" alt="Tattoo Flash" width="300" height="300">
-        </div>
-        <!-- The Modal -->
+        {% endfor %}
+
+                <!-- The Modal -->
         <div id="myModal" class="modal">
             <span class="close">&times;</span>
             <img class="modal-content" id="img01">

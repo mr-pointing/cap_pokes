@@ -3,10 +3,11 @@ Title: Capricorn Pokes Booking Site
 Author: Richard Pointing
 Purpose: Landing page, has all the options for all main features
 """
-
-from flask import Blueprint, render_template
+import os
+from flask import Flask, Blueprint, render_template
 
 bp = Blueprint("landing", __name__)
+app = Flask(__name__)
 
 
 @bp.route("/")
@@ -22,7 +23,10 @@ def portfolio():
     """
     Prepares portfolio page
     """
-    return render_template("portfolio.html")
+    image_folder = os.path.join(app.static_folder, 'portfolio')
+    images = os.listdir(image_folder)
+
+    return render_template("portfolio.html", images=images)
 
 
 @bp.route("/faq")
