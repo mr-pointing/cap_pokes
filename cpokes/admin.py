@@ -440,10 +440,9 @@ def manual_entry_form():
     """
     Admin Manual Entry form
     """
+    error = None
     if request.method == "POST":
         db = get_db()
-        error = None
-
         logging.debug(f"Form Data: {request.form}")
 
         flash_custom = 0 if request.form["flash-or-custom"] == "Flash" else 1
@@ -530,7 +529,7 @@ def manual_entry_form():
             m_pronouns = request.form["pronouns"]
             try:
                 db.execute(
-                    "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO client (email, name, alt_name, phone, pronouns) VALUES (?, ?, ?, ?, ?)",
                     (m_client_email, m_name, m_alt_name, m_phone, m_pronouns),
                 )
                 db.commit()

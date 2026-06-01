@@ -115,4 +115,31 @@
             </form>
         </section>
     </main>
+    <script>
+        // JavaScript function to show/hide fields based on the selection
+        function handleOptionChange() {
+            const flashOption = document.getElementById("flash");
+            const customOption = document.getElementById("custom");
+            const flashFields = document.getElementById("flash-fields");
+            const customFields = document.getElementById("custom-fields");
+
+            if (!flashOption || !customOption || !flashFields || !customFields) {
+              return;
+            }
+
+            if (flashOption.checked) {
+                flashFields.style.display = "block";
+                customFields.style.display = "none";
+            } else if (customOption.checked) {
+                flashFields.style.display = "none";
+                customFields.style.display = "block";
+            } else {
+                flashFields.style.display = "none";
+                customFields.style.display = "none";
+            }
+        }
+
+        // Run the function on page load to handle pre-checked options
+        document.addEventListener("DOMContentLoaded", handleOptionChange);
+    </script>
 {% endblock %}
