@@ -509,7 +509,7 @@ main {
 
 .faq_section p {
   padding-bottom: 2rem;
-  text-align: center;
+  text-align: left;
   word-wrap: normal;
   font-size: 1.25rem;
 }
